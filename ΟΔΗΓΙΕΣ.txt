@@ -1,0 +1,18 @@
+ANASTASIOU Μετρήσεις – Ανέβασμα στο GitHub
+
+Ανέβασε όλα τα αρχεία αυτού του φακέλου στο repository:
+anastasiou-measurements
+
+Μετά:
+1. Settings
+2. Pages
+3. Deploy from a branch
+4. Branch: main
+5. Folder: / (root)
+6. Save
+
+Σύνδεσμος:
+https://anastasiou210979-jpg.github.io/anastasiou-measurements/
+
+Μετά στο Safari:
+Κοινοποίηση → Προσθήκη στην Αφετηρία.

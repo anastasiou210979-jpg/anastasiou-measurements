@@ -1,2 +1,6 @@
-# anastasiou-measurements
-ANASTASIOU O.E. Measurements App
+# ANASTASIOU Μετρήσεις
+
+Εφαρμογή μετρήσεων έργων για την ANASTASIOU O.E.
+
+GitHub Pages:
+Settings → Pages → Deploy from a branch → main / root → Save

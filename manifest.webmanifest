@@ -1,0 +1,22 @@
+{
+  "name": "ANASTASIOU Μετρήσεις",
+  "short_name": "Μετρήσεις",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#0b3a78",
+  "lang": "el-GR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
