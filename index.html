@@ -1,269 +1,446 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="el">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0f172a">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="ANASTASIOU Μετρήσεις">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="apple-touch-icon" href="icon-180.png">
-  <title>ANASTASIOU Μετρήσεις</title>
-  <style>
-    :root{
-      --bg:#f4f7fb; --card:#fff; --ink:#172033; --muted:#667085;
-      --primary:#1f4f8f; --primary2:#143b70;
-      --offer:#f5b942; --final:#3b82f6; --done:#22a06b; --danger:#c93c3c;
-      --border:#dbe2ea; --shadow:0 8px 24px rgba(16,24,40,.08);
-    }
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-    button,input,select,textarea{font:inherit}
-    .app{max-width:760px;margin:auto;min-height:100vh;padding-bottom:92px}
-    header{background:linear-gradient(135deg,var(--primary2),var(--primary));color:#fff;padding:calc(16px + env(safe-area-inset-top)) 18px 22px;border-radius:0 0 24px 24px}
-    .brand{display:flex;align-items:center;gap:12px}
-    .brand img{width:54px;height:54px;object-fit:contain;background:#fff;border-radius:14px;padding:5px}
-    h1{font-size:22px;margin:0}.subtitle{margin:4px 0 0;opacity:.86;font-size:14px}
-    main{padding:18px}
-    .view{display:none}.view.active{display:block}
-    .section-title{font-size:20px;margin:4px 0 14px}
-    .dashboard{display:grid;gap:14px}
-    .counter-card{border:0;width:100%;text-align:left;background:var(--card);border-radius:20px;padding:20px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between}
-    .counter-card .left{display:flex;align-items:center;gap:14px}
-    .counter-card .icon{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:27px}
-    .counter-card.offer .icon{background:#fff4d4}.counter-card.final .icon{background:#e8f1ff}
-    .counter-card strong{display:block;font-size:18px}.counter-card span{color:var(--muted);font-size:14px}
-    .count{font-size:34px;font-weight:800}.offer .count{color:#a96d00}.final .count{color:#245fc7}
-    .quick{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
-    .btn{border:0;border-radius:14px;padding:14px 16px;font-weight:700;cursor:pointer}
-    .btn.primary{background:var(--primary);color:white}.btn.secondary{background:#e9eef5;color:var(--ink)}
-    .btn.success{background:var(--done);color:white}.btn.danger{background:#fff0f0;color:var(--danger)}
-    .btn.full{width:100%}.btn.small{padding:9px 11px;font-size:14px}
-    .list{display:grid;gap:12px}
-    .project{background:var(--card);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
-    .project-top{display:flex;justify-content:space-between;gap:12px}.project h3{margin:0 0 5px;font-size:18px}
-    .meta{color:var(--muted);font-size:14px;line-height:1.5}
-    .badge{display:inline-flex;align-items:center;padding:6px 9px;border-radius:999px;font-weight:700;font-size:12px;white-space:nowrap}
-    .badge.offer{background:#fff4d4;color:#835500}.badge.final{background:#e8f1ff;color:#174f9f}.badge.done{background:#e5f7ef;color:#13744a}
-    .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-    .empty{background:white;border:1px dashed var(--border);border-radius:18px;padding:30px;text-align:center;color:var(--muted)}
-    .form-card{background:var(--card);border-radius:20px;padding:18px;box-shadow:var(--shadow)}
-    label{display:block;font-weight:700;margin:14px 0 6px}
-    input,select,textarea{width:100%;border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff;color:var(--ink)}
-    textarea{min-height:95px;resize:vertical}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .back{border:0;background:#e9eef5;border-radius:12px;padding:10px 13px;margin-bottom:12px;font-weight:700}
-    .search{margin-bottom:14px}
-    nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(760px,100%);background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(3,1fr);padding:8px 10px calc(8px + env(safe-area-inset-bottom));z-index:10}
-    nav button{border:0;background:transparent;padding:8px 4px;color:var(--muted);font-size:12px;font-weight:700}
-    nav button.active{color:var(--primary)}nav .nav-icon{display:block;font-size:23px;margin-bottom:2px}
-    .note{margin-top:14px;padding:12px;border-radius:12px;background:#eef5ff;color:#244c78;font-size:14px}
-    @media(max-width:520px){.row{grid-template-columns:1fr}.quick{grid-template-columns:1fr}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b3a78">
+<title>ANASTASIOU Μετρήσεις</title>
+<style>
+:root{--blue:#0b3a78;--blue2:#155da7;--bg:#f4f7fb;--text:#172033;--muted:#667085;--line:#d7e0eb;--ok:#127a45;--danger:#b42318}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+header{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;padding:14px 12px;box-shadow:0 2px 12px #0002}
+.head{max-width:1180px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+h1{font-size:19px;margin:0}.subtitle{font-size:12px;opacity:.9;margin-top:3px}
+main{max-width:1180px;margin:14px auto;padding:0 10px 100px}
+.topnav{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.topnav a{display:flex;justify-content:center;align-items:center;min-height:48px;background:#fff;color:var(--blue);border:1px solid var(--line);border-radius:12px;text-decoration:none;font-weight:800;padding:8px;text-align:center}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 2px 10px #0b3a7808;scroll-margin-top:85px}
+h2{font-size:18px;margin:0 0 12px} h3{font-size:16px;margin:0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.field{display:flex;flex-direction:column;gap:5px}
+label{font-size:13px;font-weight:750;color:#344054}
+input,select,textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:11px;font:inherit;background:#fff;color:var(--text)}
+textarea{resize:vertical;min-height:90px}.big{min-height:220px;font-size:16px;line-height:1.45}
+details{border:1px solid var(--line);border-radius:14px;background:#fff;margin-bottom:10px;overflow:hidden}
+summary{cursor:pointer;list-style:none;padding:14px;font-size:16px;font-weight:850;color:var(--blue);display:flex;align-items:center;justify-content:space-between;gap:10px}
+summary::-webkit-details-marker{display:none}
+summary:after{content:"＋";font-size:20px}
+details[open] summary:after{content:"−"}
+.detail-body{border-top:1px solid var(--line);padding:12px;background:#fbfcfe}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px}
+button,.btn{border:0;border-radius:11px;padding:11px 13px;background:var(--blue);color:#fff;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.secondary{background:#eaf1f8!important;color:var(--blue)!important}.danger{background:#feecea!important;color:var(--danger)!important}.ok{background:#e9f8ef!important;color:var(--ok)!important}
+.note{background:#eef6ff;border-left:4px solid var(--blue);padding:10px;border-radius:9px;font-size:13px;color:#344054}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px;margin-top:10px}
+table{border-collapse:collapse;width:100%;min-width:1030px;background:#fff}
+th,td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:5px;vertical-align:middle}
+th{background:#eef3f8;font-size:12px;text-align:center}
+td input,td select,td textarea{border:0;border-radius:0;padding:8px;min-width:75px}
+td textarea{min-height:48px}.rowno{width:42px;text-align:center;font-weight:800}
+.photo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.photo{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+.photo img{width:100%;height:180px;object-fit:cover;display:block}.photo button{position:absolute;top:6px;right:6px;padding:7px 9px}
+.list{display:grid;gap:9px}.list-item{border:1px solid var(--line);border-radius:12px;padding:11px;background:#fff;display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px}
+.title{font-weight:850}.muted{font-size:13px;color:var(--muted)}
+.status{min-height:20px;font-size:13px;color:var(--ok);padding-top:7px}
+.fixedbar{position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;border-top:1px solid var(--line);padding:8px}
+.fixedbar .toolbar{max-width:1180px;margin:auto;justify-content:center}
+.small{padding:7px 9px;font-size:13px}
+.dashboard{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.metric{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.metric .ico{font-size:25px}.metric .num{font-size:24px;font-weight:900;line-height:1}.metric .lbl{font-size:12px;color:var(--muted);font-weight:750}
+.workflow-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.history{display:grid;gap:7px;max-height:240px;overflow:auto}.history-item{border-left:3px solid var(--blue);padding:7px 9px;background:#f8fafc;border-radius:7px;font-size:13px}
+.badge{display:inline-flex;padding:4px 8px;border-radius:999px;background:#eef3f8;color:var(--blue);font-size:12px;font-weight:850}
+.hidden{display:none!important}
+noscript .note{margin:12px}
+@media(max-width:760px){
+ .grid,.grid3{grid-template-columns:1fr}
+ .topnav{grid-template-columns:repeat(2,1fr)}
+ .photo-grid{grid-template-columns:repeat(2,1fr)}
+ .dashboard{grid-template-columns:1fr}
+ .photo img{height:145px}
+ .fixedbar button{flex:1 1 42%}
+}
+@media print{
+ header,.topnav,.fixedbar,.no-print,#projects,#customers,#backup{display:none!important}
+ body{background:#fff}main{padding:0}.card,details{border:0;box-shadow:none}
+ details{display:block!important}details>summary{display:none}details>.detail-body{display:block!important;border:0}
+}
+</style>
+
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ANASTASIOU Μετρήσεις">
+
 </head>
 <body>
-<div class="app">
-  <header>
-    <div class="brand">
-      <img src="logo.png" alt="ANASTASIOU O.E." onerror="this.style.display='none'">
-      <div><h1>ANASTASIOU Μετρήσεις</h1><p class="subtitle">Εκκρεμότητες μετρήσεων</p></div>
-    </div>
-  </header>
+<header>
+<div class="head">
+<div style="display:flex;align-items:center;gap:10px"><img src="logo.png" alt="ANASTASIOU O.E." style="width:46px;height:46px;border-radius:50%;background:#fff;object-fit:cover"><div><h1>ANASTASIOU Μετρήσεις</h1><div class="subtitle">Έκδοση 4.0 • Μόνο για μετρήσεις</div></div></div>
+<a href="#project" class="btn secondary small">Αρχική</a>
+</div>
+</header>
 
-  <main>
-    <section id="homeView" class="view active">
-      <h2 class="section-title">Μετρήσεις</h2>
-      <div class="dashboard">
-        <button class="counter-card offer" onclick="openList('offer')">
-          <div class="left"><div class="icon">📋</div><div><strong>Έργα για μέτρηση προσφοράς</strong><span>Πατήστε για να δείτε τη λίστα</span></div></div>
-          <div id="offerCount" class="count">0</div>
-        </button>
-        <button class="counter-card final" onclick="openList('final')">
-          <div class="left"><div class="icon">📐</div><div><strong>Έργα για τελική μέτρηση</strong><span>Εγκεκριμένες προσφορές</span></div></div>
-          <div id="finalCount" class="count">0</div>
-        </button>
-      </div>
-      <div class="quick">
-        <button class="btn primary" onclick="openNewProject()">＋ Νέο έργο</button>
-        <button class="btn secondary" onclick="openAllProjects()">Όλα τα έργα</button>
-      </div>
-      <div class="note">Κάθε έργο μπορεί να το αναλάβει είτε ο Γιώργος είτε ο αδελφός του.</div>
-    </section>
+<noscript><div class="note">Το αρχείο ανοίγει και χωρίς JavaScript, αλλά για αποθήκευση έργων, αναζήτηση και backup πρέπει να ανοίξει σε Safari, Chrome ή Edge.</div></noscript>
 
-    <section id="listView" class="view">
-      <button class="back" onclick="goHome()">← Πίσω</button>
-      <h2 id="listTitle" class="section-title"></h2>
-      <input id="searchInput" class="search" type="search" placeholder="Αναζήτηση πελάτη, περιοχής ή τηλεφώνου…" oninput="renderCurrentList()">
-      <div id="projectList" class="list"></div>
-    </section>
+<form id="mainForm" action="mailto:anastasiouoe@gmail.com" method="post" enctype="text/plain">
+<main>
+<div class="note" style="margin-bottom:12px">
+<strong>Σημαντικό:</strong> Για να λειτουργεί η αποθήκευση, άνοιξε το αρχείο σε Safari, Chrome ή Edge.
+Μέσα στην προεπισκόπηση του ChatGPT λειτουργούν μόνο τα απλά πεδία.
+</div>
+<div class="note" style="margin-bottom:12px"><strong>Έκδοση 4:</strong> Η εφαρμογή είναι αποκλειστικά για μετρήσεις. Δεν περιλαμβάνει οικονομικά, παραγωγή ή service.</div>
+<nav class="topnav">
+<a href="#project">📝 Νέο έργο</a>
+<a href="#projects">📁 Έργα</a>
+<a href="#customers">👥 Πελάτες</a>
+<a href="#backup">⚙️ Backup</a>
+</nav>
 
-    <section id="formView" class="view">
-      <button class="back" onclick="goHome()">← Πίσω</button>
-      <h2 id="formTitle" class="section-title">Νέο έργο</h2>
-      <form id="projectForm" class="form-card">
-        <input type="hidden" id="projectId">
-        <label for="customer">Πελάτης *</label>
-        <input id="customer" required autocomplete="name">
-        <div class="row">
-          <div><label for="phone">Τηλέφωνο</label><input id="phone" type="tel" autocomplete="tel"></div>
-          <div><label for="area">Περιοχή</label><input id="area"></div>
-        </div>
-        <label for="address">Διεύθυνση</label>
-        <input id="address" autocomplete="street-address">
-        <div class="row">
-          <div><label for="status">Κατηγορία μέτρησης</label>
-            <select id="status">
-              <option value="offer">Μέτρηση προσφοράς</option>
-              <option value="final">Τελική μέτρηση παραγωγής</option>
-              <option value="done">Ολοκληρωμένη μέτρηση</option>
-            </select>
-          </div>
-          <div><label for="assigned">Ανάθεση</label>
-            <select id="assigned">
-              <option value="">Δεν έχει ανατεθεί</option>
-              <option value="Γιώργος">Γιώργος</option>
-              <option value="Αδελφός">Αδελφός</option>
-            </select>
-          </div>
-        </div>
-        <label for="date">Ημερομηνία μέτρησης</label>
-        <input id="date" type="date">
-        <label for="notes">Παρατηρήσεις</label>
-        <textarea id="notes"></textarea>
-        <button class="btn primary full" type="submit" style="margin-top:18px">Αποθήκευση έργου</button>
-      </form>
-    </section>
-  </main>
+<section id="dashboard" class="dashboard no-print">
+<div class="metric" data-filter-status="Μέτρηση προσφοράς"><div class="ico">📋</div><div><div id="countQuoteMeasure" class="num">0</div><div class="lbl">Για μέτρηση προσφοράς</div></div></div>
+<div class="metric" data-filter-status="Αναμονή τελικής μέτρησης"><div class="ico">📐</div><div><div id="countFinalMeasure" class="num">0</div><div class="lbl">Για τελική μέτρηση</div></div></div>
+<div class="metric" data-filter-status="Τελική μέτρηση"><div class="ico">✅</div><div><div id="countCompletedMeasure" class="num">0</div><div class="lbl">Τελικές μετρήσεις ολοκληρωμένες</div></div></div>
+</section>
 
-  <nav>
-    <button id="navHome" class="active" onclick="goHome()"><span class="nav-icon">🏠</span>Αρχική</button>
-    <button id="navNew" onclick="openNewProject()"><span class="nav-icon">➕</span>Νέο έργο</button>
-    <button id="navAll" onclick="openAllProjects()"><span class="nav-icon">📁</span>Έργα</button>
-  </nav>
+<section id="project" class="card">
+<h2>Στοιχεία έργου</h2>
+<input id="projectId" type="hidden">
+<div class="grid3">
+<div class="field"><label>Αρ. έργου</label><input id="projectNo" name="Αρ. έργου"></div>
+<div class="field"><label>Ημερομηνία</label><input id="date" name="Ημερομηνία" type="date"></div>
+<div class="field"><label>Κατάσταση έργου</label><select id="status" name="Κατάσταση"><option>Μέτρηση προσφοράς</option><option>Προσφορά στάλθηκε</option><option>Αναμονή τελικής μέτρησης</option><option>Τελική μέτρηση</option><option>Ολοκληρώθηκε</option></select></div>
+<div class="field"><label>Όνομα πελάτη</label><input id="customer" name="Πελάτης"></div>
+<div class="field"><label>Τηλέφωνο</label><input id="phone" name="Τηλέφωνο" type="tel"></div>
+<div class="field"><label>Email πελάτη</label><input id="customerEmail" name="Email πελάτη" type="email"></div>
+<div class="field"><label>Διεύθυνση</label><input id="address" name="Διεύθυνση"></div>
+<div class="field"><label>ΑΦΜ</label><input id="afm" name="ΑΦΜ"></div>
+<div class="field"><label>ΔΟΥ</label><input id="doy" name="ΔΟΥ"></div>
+<div class="field"><label>Υπεύθυνος μέτρησης</label><input id="measurer" name="Υπεύθυνος μέτρησης"></div>
+<div class="field"><label>Ανάθεση έργου</label><select id="assignedTo" name="Ανάθεση έργου"><option>Κώστας</option><option>Γιώργος</option><option>Και οι δύο</option></select></div>
+<div class="field"><label>Ενεργός χρήστης</label><select id="currentUser"><option>Κώστας</option><option>Γιώργος</option></select></div>
+</div>
+</section>
+
+<section id="workflow" class="card">
+<h2>Ροή έργου</h2>
+<div class="note">Το έργο παραμένει ένα. Αλλάζει μόνο στάδιο και κρατά ιστορικό ενεργειών.</div>
+<div id="userAlert" class="note" style="margin-top:8px;font-weight:700">Επίλεξε ενεργό χρήστη για να δεις τις εκκρεμότητές του.</div>
+<div class="workflow-actions no-print">
+<button type="button" data-next-status="Προσφορά στάλθηκε">📤 Προσφορά στάλθηκε</button>
+<button type="button" data-next-status="Αναμονή τελικής μέτρησης" class="secondary">📐 Έτοιμο για τελική μέτρηση</button>
+<button type="button" data-next-status="Τελική μέτρηση">📏 Ολοκλήρωση τελικής μέτρησης</button>
+<button type="button" data-next-status="Ολοκληρώθηκε" class="ok">✔️ Ολοκληρώθηκε</button>
+</div>
+<h3 style="margin-top:14px">Ιστορικό ενεργειών</h3>
+<div id="historyList" class="history" style="margin-top:8px"><div class="note">Δεν υπάρχουν ακόμη ενέργειες.</div></div>
+</section>
+
+<section class="card">
+<h2>Κατηγορίες έργου</h2>
+<p class="note">Πατάς πάνω σε κάθε κατηγορία για να ανοίξει. Η λειτουργία αυτή δουλεύει ακόμη και χωρίς JavaScript.</p>
+
+<details open>
+<summary>🪟 Κουφώματα</summary>
+<div class="detail-body">
+<div class="toolbar no-print">
+<button type="button" id="addRow">＋ Μία γραμμή</button>
+<button type="button" id="add5" class="secondary">＋ 5 γραμμές</button>
+<button type="button" id="clearRows" class="danger">Καθαρισμός</button>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Α/Α</th><th>Χώρος</th><th>Ύψος</th><th>Φάρδος</th><th>Λάμπας</th><th>Αρμοκάλυπτο</th><th>Τύπος κουφώματος</th><th>Ρολό</th><th>Σίτα</th><th>Παρατηρήσεις</th><th></th></tr></thead>
+<tbody id="windowRows">
+<tr><td class="rowno">1</td><td><input data-k="room"></td><td><input data-k="height" inputmode="decimal"></td><td><input data-k="width" inputmode="decimal"></td><td><input data-k="lampas" inputmode="decimal"></td><td><input data-k="armokalipto"></td><td><input data-k="type"></td><td><select data-k="roller"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><select data-k="screen"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><textarea data-k="notes"></textarea></td><td><button type="button" class="danger small delrow">×</button></td></tr>
+<tr><td class="rowno">2</td><td><input data-k="room"></td><td><input data-k="height" inputmode="decimal"></td><td><input data-k="width" inputmode="decimal"></td><td><input data-k="lampas" inputmode="decimal"></td><td><input data-k="armokalipto"></td><td><input data-k="type"></td><td><select data-k="roller"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><select data-k="screen"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><textarea data-k="notes"></textarea></td><td><button type="button" class="danger small delrow">×</button></td></tr>
+<tr><td class="rowno">3</td><td><input data-k="room"></td><td><input data-k="height" inputmode="decimal"></td><td><input data-k="width" inputmode="decimal"></td><td><input data-k="lampas" inputmode="decimal"></td><td><input data-k="armokalipto"></td><td><input data-k="type"></td><td><select data-k="roller"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><select data-k="screen"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><textarea data-k="notes"></textarea></td><td><button type="button" class="danger small delrow">×</button></td></tr>
+<tr><td class="rowno">4</td><td><input data-k="room"></td><td><input data-k="height" inputmode="decimal"></td><td><input data-k="width" inputmode="decimal"></td><td><input data-k="lampas" inputmode="decimal"></td><td><input data-k="armokalipto"></td><td><input data-k="type"></td><td><select data-k="roller"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><select data-k="screen"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><textarea data-k="notes"></textarea></td><td><button type="button" class="danger small delrow">×</button></td></tr>
+<tr><td class="rowno">5</td><td><input data-k="room"></td><td><input data-k="height" inputmode="decimal"></td><td><input data-k="width" inputmode="decimal"></td><td><input data-k="lampas" inputmode="decimal"></td><td><input data-k="armokalipto"></td><td><input data-k="type"></td><td><select data-k="roller"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><select data-k="screen"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><textarea data-k="notes"></textarea></td><td><button type="button" class="danger small delrow">×</button></td></tr>
+<tr><td class="rowno">6</td><td><input data-k="room"></td><td><input data-k="height" inputmode="decimal"></td><td><input data-k="width" inputmode="decimal"></td><td><input data-k="lampas" inputmode="decimal"></td><td><input data-k="armokalipto"></td><td><input data-k="type"></td><td><select data-k="roller"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><select data-k="screen"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><textarea data-k="notes"></textarea></td><td><button type="button" class="danger small delrow">×</button></td></tr>
+<tr><td class="rowno">7</td><td><input data-k="room"></td><td><input data-k="height" inputmode="decimal"></td><td><input data-k="width" inputmode="decimal"></td><td><input data-k="lampas" inputmode="decimal"></td><td><input data-k="armokalipto"></td><td><input data-k="type"></td><td><select data-k="roller"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><select data-k="screen"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><textarea data-k="notes"></textarea></td><td><button type="button" class="danger small delrow">×</button></td></tr>
+<tr><td class="rowno">8</td><td><input data-k="room"></td><td><input data-k="height" inputmode="decimal"></td><td><input data-k="width" inputmode="decimal"></td><td><input data-k="lampas" inputmode="decimal"></td><td><input data-k="armokalipto"></td><td><input data-k="type"></td><td><select data-k="roller"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><select data-k="screen"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><textarea data-k="notes"></textarea></td><td><button type="button" class="danger small delrow">×</button></td></tr>
+<tr><td class="rowno">9</td><td><input data-k="room"></td><td><input data-k="height" inputmode="decimal"></td><td><input data-k="width" inputmode="decimal"></td><td><input data-k="lampas" inputmode="decimal"></td><td><input data-k="armokalipto"></td><td><input data-k="type"></td><td><select data-k="roller"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><select data-k="screen"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><textarea data-k="notes"></textarea></td><td><button type="button" class="danger small delrow">×</button></td></tr>
+<tr><td class="rowno">10</td><td><input data-k="room"></td><td><input data-k="height" inputmode="decimal"></td><td><input data-k="width" inputmode="decimal"></td><td><input data-k="lampas" inputmode="decimal"></td><td><input data-k="armokalipto"></td><td><input data-k="type"></td><td><select data-k="roller"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><select data-k="screen"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><textarea data-k="notes"></textarea></td><td><button type="button" class="danger small delrow">×</button></td></tr>
+<tr><td class="rowno">11</td><td><input data-k="room"></td><td><input data-k="height" inputmode="decimal"></td><td><input data-k="width" inputmode="decimal"></td><td><input data-k="lampas" inputmode="decimal"></td><td><input data-k="armokalipto"></td><td><input data-k="type"></td><td><select data-k="roller"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><select data-k="screen"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><textarea data-k="notes"></textarea></td><td><button type="button" class="danger small delrow">×</button></td></tr>
+<tr><td class="rowno">12</td><td><input data-k="room"></td><td><input data-k="height" inputmode="decimal"></td><td><input data-k="width" inputmode="decimal"></td><td><input data-k="lampas" inputmode="decimal"></td><td><input data-k="armokalipto"></td><td><input data-k="type"></td><td><select data-k="roller"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><select data-k="screen"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><textarea data-k="notes"></textarea></td><td><button type="button" class="danger small delrow">×</button></td></tr>
+<tr><td class="rowno">13</td><td><input data-k="room"></td><td><input data-k="height" inputmode="decimal"></td><td><input data-k="width" inputmode="decimal"></td><td><input data-k="lampas" inputmode="decimal"></td><td><input data-k="armokalipto"></td><td><input data-k="type"></td><td><select data-k="roller"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><select data-k="screen"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><textarea data-k="notes"></textarea></td><td><button type="button" class="danger small delrow">×</button></td></tr>
+<tr><td class="rowno">14</td><td><input data-k="room"></td><td><input data-k="height" inputmode="decimal"></td><td><input data-k="width" inputmode="decimal"></td><td><input data-k="lampas" inputmode="decimal"></td><td><input data-k="armokalipto"></td><td><input data-k="type"></td><td><select data-k="roller"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><select data-k="screen"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><textarea data-k="notes"></textarea></td><td><button type="button" class="danger small delrow">×</button></td></tr>
+<tr><td class="rowno">15</td><td><input data-k="room"></td><td><input data-k="height" inputmode="decimal"></td><td><input data-k="width" inputmode="decimal"></td><td><input data-k="lampas" inputmode="decimal"></td><td><input data-k="armokalipto"></td><td><input data-k="type"></td><td><select data-k="roller"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><select data-k="screen"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><textarea data-k="notes"></textarea></td><td><button type="button" class="danger small delrow">×</button></td></tr>
+<tr><td class="rowno">16</td><td><input data-k="room"></td><td><input data-k="height" inputmode="decimal"></td><td><input data-k="width" inputmode="decimal"></td><td><input data-k="lampas" inputmode="decimal"></td><td><input data-k="armokalipto"></td><td><input data-k="type"></td><td><select data-k="roller"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><select data-k="screen"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><textarea data-k="notes"></textarea></td><td><button type="button" class="danger small delrow">×</button></td></tr>
+<tr><td class="rowno">17</td><td><input data-k="room"></td><td><input data-k="height" inputmode="decimal"></td><td><input data-k="width" inputmode="decimal"></td><td><input data-k="lampas" inputmode="decimal"></td><td><input data-k="armokalipto"></td><td><input data-k="type"></td><td><select data-k="roller"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><select data-k="screen"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><textarea data-k="notes"></textarea></td><td><button type="button" class="danger small delrow">×</button></td></tr>
+<tr><td class="rowno">18</td><td><input data-k="room"></td><td><input data-k="height" inputmode="decimal"></td><td><input data-k="width" inputmode="decimal"></td><td><input data-k="lampas" inputmode="decimal"></td><td><input data-k="armokalipto"></td><td><input data-k="type"></td><td><select data-k="roller"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><select data-k="screen"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><textarea data-k="notes"></textarea></td><td><button type="button" class="danger small delrow">×</button></td></tr>
+<tr><td class="rowno">19</td><td><input data-k="room"></td><td><input data-k="height" inputmode="decimal"></td><td><input data-k="width" inputmode="decimal"></td><td><input data-k="lampas" inputmode="decimal"></td><td><input data-k="armokalipto"></td><td><input data-k="type"></td><td><select data-k="roller"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><select data-k="screen"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><textarea data-k="notes"></textarea></td><td><button type="button" class="danger small delrow">×</button></td></tr>
+<tr><td class="rowno">20</td><td><input data-k="room"></td><td><input data-k="height" inputmode="decimal"></td><td><input data-k="width" inputmode="decimal"></td><td><input data-k="lampas" inputmode="decimal"></td><td><input data-k="armokalipto"></td><td><input data-k="type"></td><td><select data-k="roller"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><select data-k="screen"><option></option><option>Ναι</option><option>Όχι</option></select></td><td><textarea data-k="notes"></textarea></td><td><button type="button" class="danger small delrow">×</button></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</details>
+
+<details>
+<summary>☀️ Πέργκολες</summary>
+<div class="detail-body">
+<div class="grid3">
+<div class="field"><label>Τύπος</label><input data-field="pergola_type"></div>
+<div class="field"><label>Μήκος</label><input data-field="pergola_length"></div>
+<div class="field"><label>Πλάτος</label><input data-field="pergola_width"></div>
+<div class="field"><label>Ύψος</label><input data-field="pergola_height"></div>
+<div class="field"><label>Χρώμα</label><input data-field="pergola_color"></div>
+<div class="field"><label>Φωτισμός LED</label><select data-field="pergola_led"><option></option><option>Ναι</option><option>Όχι</option></select></div>
+</div>
+<div class="field" style="margin-top:10px"><label>Παρατηρήσεις</label><textarea data-field="pergola_notes"></textarea></div>
+</div>
+</details>
+
+<details>
+<summary>🛡️ Κάγκελα</summary>
+<div class="detail-body">
+<div class="grid3">
+<div class="field"><label>Τύπος</label><input data-field="rail_type"></div>
+<div class="field"><label>Συνολικό μήκος</label><input data-field="rail_length"></div>
+<div class="field"><label>Ύψος</label><input data-field="rail_height"></div>
+<div class="field"><label>Υλικό</label><input data-field="rail_material"></div>
+<div class="field"><label>Χρώμα</label><input data-field="rail_color"></div>
+<div class="field"><label>Τζάμι</label><input data-field="rail_glass"></div>
+</div>
+<div class="field" style="margin-top:10px"><label>Παρατηρήσεις</label><textarea data-field="rail_notes"></textarea></div>
+</div>
+</details>
+
+<details>
+<summary>🚪 Μεσόπορτες</summary>
+<div class="detail-body">
+<div class="grid3">
+<div class="field"><label>Ποσότητα</label><input data-field="door_qty" inputmode="numeric"></div>
+<div class="field"><label>Διαστάσεις</label><input data-field="door_size"></div>
+<div class="field"><label>Τύπος / Μοντέλο</label><input data-field="door_type"></div>
+<div class="field"><label>Χρώμα</label><input data-field="door_color"></div>
+<div class="field"><label>Φορά ανοίγματος</label><input data-field="door_open"></div>
+<div class="field"><label>Κάσα</label><input data-field="door_frame"></div>
+</div>
+<div class="field" style="margin-top:10px"><label>Παρατηρήσεις</label><textarea data-field="door_notes"></textarea></div>
+</div>
+</details>
+
+<details>
+<summary>📐 Ειδικές κατασκευές</summary>
+<div class="detail-body">
+<div class="field"><label>Ελεύθερη περιγραφή</label><textarea id="specialText" name="Ειδικές κατασκευές" class="big" placeholder="Διαστάσεις, υλικά, τρόπος κατασκευής, λεπτομέρειες τοποθέτησης και παρατηρήσεις."></textarea></div>
+
+</div>
+</details>
+</section>
+
+<section id="projectPhotos" class="card">
+<h2>📷 Φωτογραφίες έργου</h2>
+<p class="note">Πατάς «Επιλογή φωτογραφιών» για να τραβήξεις νέες φωτογραφίες ή να διαλέξεις από το κινητό. Οι φωτογραφίες αποθηκεύονται μαζί με το συγκεκριμένο έργο.</p>
+<div class="field no-print" style="margin-top:12px">
+<label for="photoInput">Προσθήκη φωτογραφιών</label>
+<input id="photoInput" type="file" accept="image/*" capture="environment" multiple>
+</div>
+<div id="photoGrid" class="photo-grid"></div>
+<div class="toolbar no-print" style="margin-top:10px">
+<button type="button" id="clearPhotos" class="danger">Διαγραφή όλων των φωτογραφιών</button>
+</div>
+</section>
+
+<section class="card">
+<h2>Υλικά έργου</h2>
+<div class="grid3">
+<div class="field"><label>Προφίλ / Εταιρεία</label><input data-field="material_profile"></div>
+<div class="field"><label>Σύστημα</label><input data-field="material_system"></div>
+<div class="field"><label>Χρώμα</label><input data-field="material_color"></div>
+<div class="field"><label>Τζάμι</label><input data-field="material_glass"></div>
+<div class="field"><label>Σίτες</label><input data-field="material_screens"></div>
+<div class="field"><label>Ρολά / Παντζούρια</label><input data-field="material_rollers"></div>
+<div class="field"><label>Μηχανισμοί</label><input data-field="material_hardware"></div>
+<div class="field"><label>Λοιπά υλικά</label><input data-field="material_other"></div>
+</div>
+</section>
+
+<section id="projects" class="card">
+<h2>Αποθηκευμένα έργα</h2>
+<div class="grid"><div class="field"><label>Αναζήτηση</label><input id="projectSearch" placeholder="Πελάτης, τηλέφωνο, αρ. έργου ή διεύθυνση"></div><div class="field"><label>Φίλτρο σταδίου</label><div class="toolbar"><span id="activeFilter" class="badge">Όλα τα έργα</span><button type="button" id="clearStageFilter" class="secondary small">Καθαρισμός φίλτρου</button></div></div></div>
+<div id="projectList" class="list" style="margin-top:12px"><div class="note">Δεν υπάρχουν ακόμη αποθηκευμένα έργα.</div></div>
+</section>
+
+<section id="customers" class="card">
+<h2>Πελάτες</h2>
+<div class="field"><label>Αναζήτηση πελάτη</label><input id="customerSearch" placeholder="Όνομα, τηλέφωνο ή email"></div>
+<div id="customerList" class="list" style="margin-top:12px"><div class="note">Οι πελάτες δημιουργούνται αυτόματα από τα αποθηκευμένα έργα.</div></div>
+</section>
+
+<section id="printHelp" class="card">
+<h2>Email και PDF / Εκτύπωση</h2>
+<div class="note">
+<strong>Email:</strong> Πατώντας «Άνοιγμα Email» ανοίγει η εφαρμογή email προς
+<strong>anastasiouoe@gmail.com</strong>. Σε ορισμένα iPhone τα πεδία της φόρμας μπορεί να μην περάσουν αυτόματα·
+τότε επισυνάπτεις το PDF ή αντιγράφεις τα στοιχεία του έργου.
+</div>
+<div class="note" style="margin-top:10px">
+<strong>PDF / Εκτύπωση στο iPhone:</strong> πάτησε το κουμπί κοινοποίησης του Safari,
+μετά «Εκτύπωση». Στην προεπισκόπηση άνοιξε τη σελίδα με δύο δάχτυλα και πάτησε ξανά
+κοινοποίηση → «Αποθήκευση στα Αρχεία».
+</div>
+</section>
+
+<section id="backup" class="card">
+<h2>Backup και μεταφορά</h2>
+<p class="note">Η εφαρμογή αποθηκεύει τα έργα τοπικά στη συσκευή. Κάνε τακτικά εξαγωγή backup.</p>
+<div class="toolbar">
+<button type="button" id="exportAll">⬇️ Εξαγωγή όλων</button>
+<button type="button" id="importBtn" class="secondary">⬆️ Εισαγωγή backup</button>
+<input id="importFile" type="file" accept=".json,application/json" hidden>
+</div>
+<div id="backupStatus" class="status"></div>
+</section>
+</main>
+</form>
+
+<div class="fixedbar">
+<div class="toolbar">
+<button type="reset" form="mainForm" id="newProject" class="secondary">＋ Νέο / Καθαρισμός</button>
+<button type="button" id="saveProject">💾 Αποθήκευση τώρα</button>
+<button type="submit" form="mainForm" id="emailProject" class="secondary">📧 Άνοιγμα Email</button>
+<a href="#printHelp" class="btn secondary">🖨️ PDF / Εκτύπωση</a>
+</div>
+<div id="mainStatus" class="status" style="text-align:center"></div>
 </div>
 
 <script>
-const STORAGE_KEY='anastasiou_measurements_v2_projects';
-let projects=loadProjects();
-let currentFilter='all';
+(function(){
+'use strict';
+const KEY='ANASTASIOU_OFFLINE_V4';
+let photos=[];
 
-function loadProjects(){
-  try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||[]}
-  catch(e){return []}
-}
-function saveProjects(){
-  localStorage.setItem(STORAGE_KEY,JSON.stringify(projects));
-  updateCounts();
-}
-function esc(v=''){return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-function statusLabel(s){return s==='offer'?'Μέτρηση προσφοράς':s==='final'?'Τελική μέτρηση':'Ολοκληρωμένη'}
-function statusClass(s){return s==='offer'?'offer':s==='final'?'final':'done'}
-function updateCounts(){
-  document.getElementById('offerCount').textContent=projects.filter(p=>p.status==='offer').length;
-  document.getElementById('finalCount').textContent=projects.filter(p=>p.status==='final').length;
-}
-function showView(id){
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
-}
-function goHome(){
-  showView('homeView');document.getElementById('navHome').classList.add('active');updateCounts();
-}
-function openNewProject(){
-  showView('formView');document.getElementById('navNew').classList.add('active');
-  document.getElementById('formTitle').textContent='Νέο έργο';
-  document.getElementById('projectForm').reset();
-  document.getElementById('projectId').value='';
-  document.getElementById('date').value=new Date().toISOString().slice(0,10);
-}
-function openList(filter){
-  currentFilter=filter;showView('listView');
-  document.getElementById('navAll').classList.add('active');
-  document.getElementById('searchInput').value='';
-  document.getElementById('listTitle').textContent=filter==='offer'?'Έργα για μέτρηση προσφοράς':'Έργα για τελική μέτρηση';
-  renderCurrentList();
-}
-function openAllProjects(){
-  currentFilter='all';showView('listView');document.getElementById('navAll').classList.add('active');
-  document.getElementById('searchInput').value='';
-  document.getElementById('listTitle').textContent='Όλα τα έργα';
-  renderCurrentList();
-}
-function renderCurrentList(){
-  const q=document.getElementById('searchInput').value.trim().toLowerCase();
-  let data=projects.filter(p=>currentFilter==='all'||p.status===currentFilter);
-  if(q)data=data.filter(p=>[p.customer,p.phone,p.area,p.address,p.assigned].join(' ').toLowerCase().includes(q));
-  data.sort((a,b)=>(b.updatedAt||'').localeCompare(a.updatedAt||''));
-  const box=document.getElementById('projectList');
-  if(!data.length){box.innerHTML='<div class="empty">Δεν υπάρχουν έργα σε αυτή την κατηγορία.</div>';return}
-  box.innerHTML=data.map(p=>`
-    <article class="project">
-      <div class="project-top">
-        <div><h3>${esc(p.customer)}</h3><div class="meta">${esc(p.area||p.address||'Χωρίς περιοχή')} ${p.phone?'• '+esc(p.phone):''}</div></div>
-        <span class="badge ${statusClass(p.status)}">${statusLabel(p.status)}</span>
-      </div>
-      <div class="meta" style="margin-top:8px">
-        ${p.assigned?'Ανάθεση: <strong>'+esc(p.assigned)+'</strong><br>':''}
-        ${p.date?'Ημερομηνία: '+new Date(p.date+'T00:00:00').toLocaleDateString('el-GR')+'<br>':''}
-        ${p.notes?esc(p.notes):''}
-      </div>
-      <div class="actions">
-        <button class="btn secondary small" onclick="editProject('${p.id}')">Επεξεργασία</button>
-        ${p.status==='offer'?`<button class="btn success small" onclick="moveToFinal('${p.id}')">Έτοιμο για τελική μέτρηση</button>`:''}
-        ${p.status==='final'?`<button class="btn success small" onclick="completeProject('${p.id}')">Ολοκλήρωση μέτρησης</button>`:''}
-        <button class="btn danger small" onclick="deleteProject('${p.id}')">Διαγραφή</button>
-      </div>
-    </article>`).join('');
-}
-function editProject(id){
-  const p=projects.find(x=>x.id===id);if(!p)return;
-  showView('formView');document.getElementById('navAll').classList.add('active');
-  document.getElementById('formTitle').textContent='Επεξεργασία έργου';
-  ['projectId','customer','phone','area','address','status','assigned','date','notes'].forEach(k=>{
-    const el=document.getElementById(k); el.value=k==='projectId'?p.id:(p[k]||'');
+const $=s=>document.querySelector(s);
+const $$=s=>Array.from(document.querySelectorAll(s));
+const basicIds=['projectId','projectNo','date','status','customer','phone','customerEmail','address','afm','doy','measurer','assignedTo'];
+let stageFilter='';
+
+function today(){return new Date().toISOString().slice(0,10)}
+function uid(){return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)}
+function esc(v){return String(v||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function nowText(){return new Date().toLocaleString('el-GR')}
+function normalizeStatus(v){const map={'Νέο':'Μέτρηση προσφοράς','Σε μέτρηση':'Μέτρηση προσφοράς','Σε προσφορά':'Προσφορά στάλθηκε','Εγκεκριμένο':'Αναμονή τελικής μέτρησης','Σε κατασκευή':'Τελική μέτρηση','Παραγωγή':'Τελική μέτρηση','Τοποθέτηση':'Ολοκληρώθηκε','Ολοκληρωμένο':'Ολοκληρώθηκε'};return map[v]||v||'Μέτρηση προσφοράς'}
+function getAll(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return []}}
+function setAll(a){localStorage.setItem(KEY,JSON.stringify(a))}
+function saveArrayItem(p){const a=getAll();const i=a.findIndex(x=>x.id===p.id);if(i>=0)a[i]=p;else a.push(p);setAll(a)}
+function rowData(){return $$('#windowRows tr').map(tr=>{const o={};tr.querySelectorAll('[data-k]').forEach(el=>o[el.dataset.k]=el.value);return o})}
+function extras(){const o={};$$('[data-field]').forEach(el=>o[el.dataset.field]=el.value);return o}
+function collect(){const existing=getAll().find(x=>x.id===($('#projectId').value||''));const p={id:$('#projectId').value||uid(),updatedAt:new Date().toISOString(),windows:rowData(),extra:extras(),specialText:$('#specialText').value,photos:photos.slice(),history:Array.isArray(existing&&existing.history)?existing.history.slice():[]};basicIds.forEach(id=>p[id]=$('#'+id).value);p.projectId=p.id;return p}
+function emptyRow(i,d={}){return `<tr><td class="rowno">${i}</td><td><input data-k="room" value="${esc(d.room)}"></td><td><input data-k="height" inputmode="decimal" value="${esc(d.height)}"></td><td><input data-k="width" inputmode="decimal" value="${esc(d.width)}"></td><td><input data-k="lampas" inputmode="decimal" value="${esc(d.lampas)}"></td><td><input data-k="armokalipto" value="${esc(d.armokalipto)}"></td><td><input data-k="type" value="${esc(d.type)}"></td><td><select data-k="roller"><option></option><option ${d.roller==='Ναι'?'selected':''}>Ναι</option><option ${d.roller==='Όχι'?'selected':''}>Όχι</option></select></td><td><select data-k="screen"><option></option><option ${d.screen==='Ναι'?'selected':''}>Ναι</option><option ${d.screen==='Όχι'?'selected':''}>Όχι</option></select></td><td><textarea data-k="notes">${esc(d.notes)}</textarea></td><td><button type="button" class="danger small delrow">×</button></td></tr>`}
+function bindRows(){$$('.delrow').forEach(b=>b.onclick=()=>{if($('#windowRows').children.length>1){b.closest('tr').remove();renumber()}})}
+function renumber(){$$('#windowRows tr').forEach((tr,i)=>tr.querySelector('.rowno').textContent=i+1)}
+function addRows(n,data=[]){for(let i=0;i<n;i++)$('#windowRows').insertAdjacentHTML('beforeend',emptyRow($('#windowRows').children.length+1,data[i]||{}));bindRows();if(typeof updateWindowNames==='function')updateWindowNames()}
+function renderPhotos(){const g=$('#photoGrid');g.innerHTML='';photos.forEach((src,i)=>{const d=document.createElement('div');d.className='photo';d.innerHTML=`<img src="${src}" alt="Φωτογραφία έργου"><button type="button" class="danger small">Διαγραφή</button>`;d.querySelector('button').onclick=()=>{photos.splice(i,1);renderPhotos()};g.appendChild(d)})}
+function compress(file,max=1280,q=.74){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const s=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext('2d').drawImage(im,0,0,c.width,c.height);resolve(c.toDataURL('image/jpeg',q))};im.onerror=reject;im.src=r.result};r.onerror=reject;r.readAsDataURL(file)})}
+function clearForm(ask=true){if(ask&&!confirm('Να ανοίξει νέο κενό έργο;'))return;basicIds.forEach(id=>$('#'+id).value='');$('#date').value=today();$('#status').value='Μέτρηση προσφοράς';$('#assignedTo').value='Κώστας';$$('[data-field]').forEach(el=>el.value='');$('#specialText').value='';photos=[];renderPhotos();$('#windowRows').innerHTML='';addRows(20);renderHistory([]);$('#mainStatus').textContent='Νέο έργο';location.hash='#project'}
+function fill(p){clearForm(false);basicIds.forEach(id=>$('#'+id).value=p[id]||'');$('#status').value=normalizeStatus(p.status);$('#assignedTo').value=p.assignedTo||'Κώστας';$('#projectId').value=p.id;$$('[data-field]').forEach(el=>el.value=(p.extra||{})[el.dataset.field]||'');$('#specialText').value=p.specialText||'';photos=Array.isArray(p.photos)?p.photos:[];renderPhotos();$('#windowRows').innerHTML='';addRows(Math.max(1,(p.windows||[]).length),p.windows||[]);renderHistory(p.history||[]);location.hash='#project';$('#mainStatus').textContent='Το έργο άνοιξε.'}
+function save(){try{const p=collect();if(!p.projectNo&&!p.customer){$('#mainStatus').textContent='Γράψε τουλάχιστον αρ. έργου ή πελάτη.';return}const exists=getAll().some(x=>x.id===p.id);if(!exists)p.history.push({at:new Date().toISOString(),user:$('#currentUser').value,action:'Δημιουργία έργου',status:p.status});$('#projectId').value=p.id;saveArrayItem(p);renderProjects();renderCustomers();renderDashboard();updateUserAlert();renderHistory(p.history);$('#mainStatus').textContent='Το έργο αποθηκεύτηκε.'}catch(e){$('#mainStatus').textContent='Αποτυχία αποθήκευσης. Άνοιξέ το σε Safari, Chrome ή Edge.'}}
+function renderProjects(){let a=getAll(),q=$('#projectSearch').value.toLowerCase();a=a.map(p=>({...p,status:normalizeStatus(p.status)})).filter(p=>[p.projectNo,p.customer,p.phone,p.address].join(' ').toLowerCase().includes(q));if(stageFilter)a=a.filter(p=>p.status===stageFilter);a=a.sort((x,y)=>(y.updatedAt||'').localeCompare(x.updatedAt||''));const box=$('#projectList');box.innerHTML='';if(!a.length){box.innerHTML='<div class="note">Δεν υπάρχουν έργα με αυτά τα κριτήρια.</div>';return}a.forEach(p=>{const d=document.createElement('div');d.className='list-item';d.innerHTML=`<div><div class="title">${esc(p.projectNo||'Χωρίς αρ. έργου')} – ${esc(p.customer||'Χωρίς πελάτη')}</div><div class="muted">${esc(p.phone)} ${p.address?'• '+esc(p.address):''}<br><span class="badge">${esc(p.status)}</span> ${p.assignedTo?'• Ανάθεση: '+esc(p.assignedTo):''}</div></div><div class="toolbar"><button type="button" class="small open">Άνοιγμα</button><button type="button" class="small danger del">Διαγραφή</button></div>`;d.querySelector('.open').onclick=()=>fill(p);d.querySelector('.del').onclick=()=>{if(confirm('Να διαγραφεί οριστικά το έργο;')){setAll(getAll().filter(x=>x.id!==p.id));renderProjects();renderCustomers();renderDashboard()}};box.appendChild(d)})}
+function renderCustomers(){const q=$('#customerSearch').value.toLowerCase(),map={};getAll().forEach(p=>{const k=(p.customer||'').trim().toLowerCase();if(!k)return;if(!map[k])map[k]={name:p.customer,phone:p.phone,email:p.customerEmail,address:p.address,count:0};map[k].count++});const a=Object.values(map).filter(c=>[c.name,c.phone,c.email].join(' ').toLowerCase().includes(q)).sort((x,y)=>x.name.localeCompare(y.name,'el'));const box=$('#customerList');box.innerHTML='';if(!a.length){box.innerHTML='<div class="note">Δεν υπάρχουν πελάτες.</div>';return}a.forEach(c=>{const d=document.createElement('div');d.className='list-item';d.innerHTML=`<div><div class="title">${esc(c.name)}</div><div class="muted">${esc(c.phone)} ${c.email?'• '+esc(c.email):''} ${c.address?'• '+esc(c.address):''}<br>${c.count} έργο/έργα</div></div><button type="button" class="small">Νέο έργο</button>`;d.querySelector('button').onclick=()=>{clearForm(false);$('#customer').value=c.name;$('#phone').value=c.phone||'';$('#customerEmail').value=c.email||'';$('#address').value=c.address||''};box.appendChild(d)})}
+function renderHistory(items){const box=$('#historyList');box.innerHTML='';if(!items||!items.length){box.innerHTML='<div class="note">Δεν υπάρχουν ακόμη ενέργειες.</div>';return}items.slice().reverse().forEach(h=>{const d=document.createElement('div');d.className='history-item';d.innerHTML=`<strong>${esc(h.action||'Ενέργεια')}</strong> — ${esc(h.user||'-')}<br><span class="muted">${esc(new Date(h.at).toLocaleString('el-GR'))}${h.status?' • '+esc(h.status):''}</span>`;box.appendChild(d)})}
+function changeStage(next){const p=collect();if(!p.projectNo&&!p.customer){$('#mainStatus').textContent='Γράψε πρώτα αρ. έργου ή πελάτη.';return}const previous=normalizeStatus(p.status);p.status=next;$('#status').value=next;if(next==='Μέτρηση προσφοράς'||next==='Προσφορά στάλθηκε')p.assignedTo='Κώστας';if(next==='Αναμονή τελικής μέτρησης'||next==='Τελική μέτρηση')p.assignedTo='Γιώργος';$('#assignedTo').value=p.assignedTo;p.history=Array.isArray(p.history)?p.history:[];p.history.push({at:new Date().toISOString(),user:$('#currentUser').value,action:`Αλλαγή σταδίου: ${previous} → ${next} • Ανάθεση: ${p.assignedTo}`,status:next});$('#projectId').value=p.id;saveArrayItem(p);renderHistory(p.history);renderProjects();renderDashboard();updateUserAlert();$('#mainStatus').textContent=`Το έργο μεταφέρθηκε στο στάδιο «${next}» και ανατέθηκε στον ${p.assignedTo}.`;try{if('Notification'in window&&Notification.permission==='granted')new Notification('ANASTASIOU O.E.',{body:`${p.projectNo||p.customer}: ${next} — ${p.assignedTo}`})}catch(e){}}
+function renderDashboard(){const a=getAll().map(p=>({...p,status:normalizeStatus(p.status)}));$('#countQuoteMeasure').textContent=a.filter(p=>p.status==='Μέτρηση προσφοράς').length;$('#countFinalMeasure').textContent=a.filter(p=>p.status==='Αναμονή τελικής μέτρησης').length;$('#countCompletedMeasure').textContent=a.filter(p=>p.status==='Τελική μέτρηση'||p.status==='Ολοκληρώθηκε').length}
+function updateUserAlert(){const u=$('#currentUser').value;const a=getAll().map(p=>({...p,status:normalizeStatus(p.status)}));const pending=u==='Κώστας'?a.filter(p=>p.status==='Μέτρηση προσφοράς'&&p.assignedTo==='Κώστας').length:a.filter(p=>p.status==='Αναμονή τελικής μέτρησης'&&p.assignedTo==='Γιώργος').length;$('#userAlert').textContent=u==='Κώστας'?`${pending} έργο/έργα περιμένουν μέτρηση για προσφορά από τον Κώστα.`:`${pending} έργο/έργα περιμένουν τελική μέτρηση για παραγωγή από τον Γιώργο.`}
+function setStageFilter(v){stageFilter=v||'';$('#activeFilter').textContent=stageFilter||'Όλα τα έργα';renderProjects();location.hash='#projects'}
+function download(name,text,type='application/json'){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function emailBody(){const p=collect(),L=[`ANASTASIOU O.E. – ΜΕΤΡΗΣΕΙΣ ΕΡΓΟΥ`,'',`Αρ. έργου: ${p.projectNo||'-'}`,`Ημερομηνία: ${p.date||'-'}`,`Πελάτης: ${p.customer||'-'}`,`Τηλέφωνο: ${p.phone||'-'}`,`Email πελάτη: ${p.customerEmail||'-'}`,`Διεύθυνση: ${p.address||'-'}`,`ΑΦΜ: ${p.afm||'-'}`,`ΔΟΥ: ${p.doy||'-'}`,`Υπεύθυνος μέτρησης: ${p.measurer||'-'}`];const rows=p.windows.filter(r=>Object.values(r).some(v=>String(v).trim()));if(rows.length){L.push('','ΚΟΥΦΩΜΑΤΑ');rows.forEach((r,i)=>L.push(`${i+1}. ${r.room||'-'} | Υ:${r.height||'-'} | Φ:${r.width||'-'} | Λάμπας:${r.lampas||'-'} | Αρμοκάλυπτο:${r.armokalipto||'-'} | Τύπος:${r.type||'-'} | Ρολό:${r.roller||'-'} | Σίτα:${r.screen||'-'} | ${r.notes||''}`))}if(p.specialText)L.push('','ΕΙΔΙΚΕΣ ΚΑΤΑΣΚΕΥΕΣ',p.specialText);if(p.photos.length)L.push('',`Φωτογραφίες στο έργο: ${p.photos.length}`);return L.join('\n')}
+$('#addRow').onclick=()=>addRows(1);
+$('#add5').onclick=()=>addRows(5);
+$('#clearRows').onclick=()=>{if(confirm('Να καθαριστούν οι γραμμές κουφωμάτων;')){$('#windowRows').innerHTML='';addRows(20)}};
+$('#mainForm').addEventListener('submit',e=>{e.preventDefault();const p=collect();const subject=`Μετρήσεις έργου ${p.projectNo||''} - ${p.customer||''}`;location.href=`mailto:anastasiouoe@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody())}`;});
+$('#photoInput').onchange=async e=>{const files=Array.from(e.target.files);$('#mainStatus').textContent='Επεξεργασία φωτογραφιών...';for(const f of files){try{photos.push(await compress(f))}catch(err){}}renderPhotos();e.target.value='';$('#mainStatus').textContent='Οι φωτογραφίες προστέθηκαν. Πάτησε Αποθήκευση.'};
+$('#clearPhotos').onclick=()=>{if(!photos.length){$('#mainStatus').textContent='Δεν υπάρχουν φωτογραφίες.';return}if(confirm('Να διαγραφούν όλες οι φωτογραφίες του έργου;')){photos=[];renderPhotos();autoSave();$('#mainStatus').textContent='Οι φωτογραφίες διαγράφηκαν.'}};
+$('#projectSearch').oninput=renderProjects;
+$('#customerSearch').oninput=renderCustomers;
+$('#currentUser').onchange=()=>{updateUserAlert();try{if('Notification'in window&&Notification.permission==='default')Notification.requestPermission()}catch(e){}};
+$$('[data-next-status]').forEach(b=>b.onclick=()=>changeStage(b.dataset.nextStatus));
+$$('[data-filter-status]').forEach(m=>m.onclick=()=>setStageFilter(m.dataset.filterStatus));
+$('#clearStageFilter').onclick=()=>setStageFilter('');
+$('#exportAll').onclick=()=>{download(`ANASTASIOU_BACKUP_${today()}.json`,JSON.stringify({version:5,exportedAt:new Date().toISOString(),projects:getAll()},null,2));$('#backupStatus').textContent='Το backup δημιουργήθηκε.'};
+$('#importBtn').onclick=()=>$('#importFile').click();
+$('#importFile').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;const data=JSON.parse(await file.text());const incoming=Array.isArray(data)?data:data.projects;if(!Array.isArray(incoming))throw new Error('Μη έγκυρο αρχείο');const map=new Map(getAll().map(p=>[p.id,p]));incoming.forEach(p=>{if(p.id)map.set(p.id,p)});setAll(Array.from(map.values()));renderProjects();renderCustomers();$('#backupStatus').textContent=`Εισήχθησαν ${incoming.length} έργα.`}catch(err){$('#backupStatus').textContent='Αποτυχία εισαγωγής backup.'}e.target.value=''};
+
+// Native form names for email submission.
+$$('[data-field]').forEach(el=>{if(!el.name)el.name=el.dataset.field});
+function updateWindowNames(){
+  $$('#windowRows tr').forEach((tr,i)=>{
+    tr.querySelectorAll('[data-k]').forEach(el=>el.name=`Κούφωμα ${i+1} - ${el.dataset.k}`);
   });
 }
-function moveToFinal(id){
-  const p=projects.find(x=>x.id===id);if(!p)return;
-  p.status='final';p.updatedAt=new Date().toISOString();saveProjects();renderCurrentList();
-  alert('Το έργο μεταφέρθηκε στις τελικές μετρήσεις.');
+updateWindowNames();
+
+let autoTimer=null;
+function autoSave(){
+  clearTimeout(autoTimer);
+  autoTimer=setTimeout(()=>{
+    try{
+      const p=collect();
+      if(p.projectNo || p.customer){
+        $('#projectId').value=p.id;
+        saveArrayItem(p);
+        $('#mainStatus').textContent='Αυτόματη αποθήκευση ολοκληρώθηκε.';
+        renderProjects();
+        renderCustomers();
+      } else {
+        try{ localStorage.setItem(KEY+'_DRAFT', JSON.stringify(p)); }catch(e){}
+        $('#mainStatus').textContent='Πρόχειρο αποθηκεύτηκε αυτόματα.';
+      }
+    }catch(e){
+      $('#mainStatus').textContent='Για αποθήκευση άνοιξε το αρχείο σε Safari, Chrome ή Edge.';
+    }
+  },700);
 }
-function completeProject(id){
-  const p=projects.find(x=>x.id===id);if(!p)return;
-  p.status='done';p.updatedAt=new Date().toISOString();saveProjects();renderCurrentList();
-}
-function deleteProject(id){
-  if(!confirm('Να διαγραφεί αυτό το έργο;'))return;
-  projects=projects.filter(x=>x.id!==id);saveProjects();renderCurrentList();
-}
-document.getElementById('projectForm').addEventListener('submit',e=>{
-  e.preventDefault();
-  const id=document.getElementById('projectId').value;
-  const data={
-    id:id||('prj_'+Date.now()),
-    customer:document.getElementById('customer').value.trim(),
-    phone:document.getElementById('phone').value.trim(),
-    area:document.getElementById('area').value.trim(),
-    address:document.getElementById('address').value.trim(),
-    status:document.getElementById('status').value,
-    assigned:document.getElementById('assigned').value,
-    date:document.getElementById('date').value,
-    notes:document.getElementById('notes').value.trim(),
-    updatedAt:new Date().toISOString()
-  };
-  if(id){
-    const i=projects.findIndex(x=>x.id===id);
-    data.createdAt=projects[i]?.createdAt||data.updatedAt;
-    projects[i]=data;
-  }else{
-    data.createdAt=data.updatedAt;projects.push(data);
-  }
-  saveProjects();goHome();alert('Το έργο αποθηκεύτηκε.');
+document.getElementById('mainForm').addEventListener('input',autoSave);
+document.getElementById('mainForm').addEventListener('change',autoSave);
+
+$('#saveProject').onclick=()=>save();
+
+document.getElementById('mainForm').addEventListener('reset',()=>{
+  setTimeout(()=>{
+    $('#projectId').value='';
+    $('#date').value=today();
+    $('#status').value='Μέτρηση προσφοράς';$('#assignedTo').value='Κώστας';
+    photos=[];
+    renderPhotos();
+    $('#windowRows').innerHTML='';
+    addRows(20);
+    updateWindowNames();
+    $('#mainStatus').textContent='Άνοιξε νέο κενό έργο.';
+    location.hash='#project';
+  },0);
 });
-updateCounts();
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+
+// Restore unsaved draft if available.
+try{
+  const draft=JSON.parse(localStorage.getItem(KEY+'_DRAFT')||'null');
+  if(draft && !getAll().length && (draft.projectNo || draft.customer || draft.specialText)){
+    fill(draft);
+    $('#mainStatus').textContent='Επαναφέρθηκε το τελευταίο πρόχειρο.';
+  }
+}catch(e){}
+
+bindRows();updateWindowNames();if(!$('#date').value)$('#date').value=today();if(!$('#currentUser').value)$('#currentUser').value='Κώστας';renderProjects();renderCustomers();renderDashboard();updateUserAlert();renderHistory([]);updateUserAlert();$('#mainStatus').textContent=$('#mainStatus').textContent||'Έτοιμο για χρήση.';
+
+})();
 </script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  });
+}
+</script>
+
 </body>
 </html>

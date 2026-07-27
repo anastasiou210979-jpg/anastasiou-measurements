@@ -1,6 +1,5 @@
-# ANASTASIOU Μετρήσεις
+# ANASTASIOU O.E. – Εφαρμογή Μετρήσεων
 
-Εφαρμογή μετρήσεων έργων για την ANASTASIOU O.E.
+Τελική έκδοση για GitHub Pages.
 
-GitHub Pages:
-Settings → Pages → Deploy from a branch → main / root → Save
+Ανεβάστε τα 7 αρχεία αυτού του φακέλου στη ρίζα του repository `anastasiou-measurements` και επιλέξτε **Commit changes**.
