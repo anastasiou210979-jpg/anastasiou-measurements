@@ -440,13 +440,21 @@ const voiceBtn = $("#voiceBtn");
 let voiceRecognition = null;
 let voiceActive = false;
 let voiceTimer = null;
+let voiceTarget = null;
+
+$("#app").addEventListener("focusin", event => {
+  const field = event.target;
+  if (!field.matches("input:not([type='hidden']):not([type='file']), textarea")) return;
+  if (field.readOnly || field.disabled) return;
+  voiceTarget = field;
+});
 
 function resetVoiceButton() {
   voiceActive = false;
   clearTimeout(voiceTimer);
   voiceTimer = null;
   voiceBtn.disabled = false;
-  voiceBtn.textContent = "🎤 Φωνητική σημείωση";
+  voiceBtn.textContent = "🎤 Φωνητική καταχώριση";
 }
 
 function stopVoiceRecognition() {
@@ -475,9 +483,15 @@ if (!SpeechRecognition) {
     voiceRecognition.onresult = event => {
       const text = event.results?.[0]?.[0]?.transcript?.trim();
       if (!text) return;
-      const notes = $("#generalNotes");
-      notes.value += `${notes.value ? "\n" : ""}${text}`;
-      notes.dispatchEvent(new Event("input", { bubbles: true }));
+      const field = voiceTarget;
+      if (!field || !document.body.contains(field)) {
+        alert("Πάτησε πρώτα στο πεδίο που θέλεις να συμπληρώσεις και μετά πάτησε τη φωνητική καταχώριση.");
+        return;
+      }
+      if (field.tagName === "TEXTAREA" && field.value.trim()) field.value += `\n${text}`;
+      else field.value = text;
+      field.dispatchEvent(new Event("input", { bubbles: true }));
+      field.focus();
     };
     voiceRecognition.onerror = event => {
       resetVoiceButton();
