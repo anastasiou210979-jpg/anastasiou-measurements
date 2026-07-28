@@ -5,101 +5,93 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0b3a78">
   <link rel="manifest" href="manifest.webmanifest">
-  <title>ANASTASIOU O.E. – Έργα & Μετρήσεις</title>
+  <title>ANASTASIOU Μετρήσεις</title>
   <style>
-    :root{--b:#0b3a78;--b2:#1662ad;--bg:#f3f6fa;--line:#d7e0eb;--ok:#137a49;--warn:#a15c00;--bad:#b42318}
-    *{box-sizing:border-box}body{margin:0;background:var(--bg);font:15px system-ui,-apple-system,"Segoe UI",sans-serif;color:#172033}
-    header{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,var(--b),var(--b2));color:white;padding:13px;box-shadow:0 2px 10px #0002}
-    .head,main,.bar>div{max-width:1180px;margin:auto}.head{display:flex;justify-content:space-between;align-items:center;gap:10px}
-    h1{font-size:19px;margin:0}.sub{font-size:12px;opacity:.9}.sync{border-radius:999px;padding:7px 10px;background:#ffffff22;font-size:12px;font-weight:700}
-    main{padding:13px 10px 95px}.card,details{background:#fff;border:1px solid var(--line);border-radius:15px;margin-bottom:11px;box-shadow:0 2px 9px #0b3a7808}
-    .card{padding:13px}details{overflow:hidden}summary{padding:14px;color:var(--b);font-weight:800;cursor:pointer}.inside{border-top:1px solid var(--line);padding:12px}
+    :root{--blue:#0b3a78;--blue2:#1768b4;--bg:#f3f6fa;--line:#d7e0eb;--ok:#15734c;--warn:#a15c00;--bad:#b42318}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);font:15px system-ui,-apple-system,"Segoe UI",sans-serif;color:#172033}
+    header{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;padding:13px;box-shadow:0 2px 10px #0002}
+    .head,main,.bottom>div{max-width:1180px;margin:auto}.head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    h1{font-size:20px;margin:0}.sub{font-size:12px;opacity:.92}.sync{border-radius:999px;padding:7px 10px;background:#ffffff22;font-size:12px;font-weight:800;white-space:nowrap}
+    main{padding:13px 10px 100px}.card,details{background:#fff;border:1px solid var(--line);border-radius:15px;margin-bottom:11px;box-shadow:0 2px 9px #0b3a7808}
+    .card{padding:13px}details{overflow:hidden}summary{padding:14px;color:var(--blue);font-weight:850;cursor:pointer}.inside{border-top:1px solid var(--line);padding:12px}
     h2{font-size:18px;margin:0 0 11px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
-    label{display:grid;gap:5px;font-size:13px;font-weight:700;color:#344054}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;background:white}
-    textarea{min-height:85px;resize:vertical}.big{min-height:190px}.tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-    button,.btn{border:0;border-radius:10px;padding:10px 12px;background:var(--b);color:white;font-weight:800;cursor:pointer;text-decoration:none}.light{background:#eaf1f8;color:var(--b)}.danger{background:#feecea;color:var(--bad)}
-    .note{padding:10px;border-radius:10px;background:#eef6ff;border-left:4px solid var(--b);font-size:13px}.hidden{display:none!important}
-    .tablewrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{border-collapse:collapse;width:100%;min-width:1040px}th,td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:4px}th{background:#edf3f8;font-size:12px}td input,td select,td textarea{border:0;border-radius:0;padding:7px}td textarea{min-height:45px}
-    .list{display:grid;gap:8px}.item{border:1px solid var(--line);border-radius:11px;padding:10px;display:flex;justify-content:space-between;gap:10px;align-items:center}.title{font-weight:850}.muted{color:#667085;font-size:13px}
-    .photos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.photo{position:relative}.photo img{width:100%;height:145px;object-fit:cover;border-radius:10px}.photo button{position:absolute;right:5px;top:5px;padding:6px}
-    .bar{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--line);padding:8px;z-index:25}.bar>div{display:flex;flex-wrap:wrap;justify-content:center;gap:7px}
-    #loginCard{max-width:520px;margin:30px auto}.error{color:var(--bad)}.oktxt{color:var(--ok)}
-    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{padding:15px;border-radius:14px;background:linear-gradient(145deg,#f8fbff,#eaf2fa);border:1px solid var(--line);text-align:center}.stat strong{display:block;color:var(--b);font-size:29px}.stat span{font-size:13px;color:#475467}
-    .navtools{display:flex;flex-wrap:wrap;gap:8px}.navtools button{flex:1 1 140px}
-    @media(max-width:700px){.grid,.grid3{grid-template-columns:1fr}.stats{grid-template-columns:1fr}.photos{grid-template-columns:repeat(2,1fr)}.bar button{flex:1 1 42%}}
-    @media print{header,.bar,.no-print,#loginCard,#projectListCard{display:none!important}main{padding:0}.card,details{border:0;box-shadow:none}details{display:block}details>summary{display:none}details>.inside{display:block;border:0}}
+    label{display:grid;gap:5px;font-size:13px;font-weight:750;color:#344054}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;background:#fff;color:#172033}
+    textarea{min-height:85px;resize:vertical}.big{min-height:190px}.tools,.nav{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    button,.button{border:0;border-radius:10px;padding:10px 12px;background:var(--blue);color:#fff;font-weight:800;cursor:pointer;text-decoration:none}.light{background:#eaf1f8;color:var(--blue)}.danger{background:#feecea;color:var(--bad)}.success{background:var(--ok)}
+    .note{padding:10px;border-radius:10px;background:#eef6ff;border-left:4px solid var(--blue);font-size:13px}.hidden{display:none!important}.muted{color:#667085;font-size:13px}.error{color:var(--bad)}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{padding:16px;border-radius:14px;background:linear-gradient(145deg,#fbfdff,#e9f2fb);border:1px solid var(--line);text-align:center;cursor:pointer}.stat strong{display:block;color:var(--blue);font-size:30px}.stat span{font-size:13px;color:#475467}
+    .nav button{flex:1 1 135px}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{border-collapse:collapse;width:100%;min-width:1080px}th,td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:4px}th{background:#edf3f8;font-size:12px}td input,td select,td textarea{border:0;border-radius:0;padding:7px}td textarea{min-height:44px}
+    .list{display:grid;gap:8px}.item{border:1px solid var(--line);border-radius:11px;padding:10px;display:flex;justify-content:space-between;gap:10px;align-items:center}.title{font-weight:850}
+    .photos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.photo{position:relative}.photo img{width:100%;height:150px;object-fit:cover;border-radius:10px}.photo button{position:absolute;right:5px;top:5px;padding:6px}
+    .bottom{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:8px;z-index:25}.bottom>div{display:flex;flex-wrap:wrap;justify-content:center;gap:7px}
+    #login{max-width:540px;margin:30px auto}.badge{display:inline-block;border-radius:999px;background:#edf3f8;color:var(--blue);padding:4px 8px;font-size:12px;font-weight:800}
+    @media(max-width:700px){.grid,.grid3,.stats{grid-template-columns:1fr}.photos{grid-template-columns:repeat(2,1fr)}.bottom button{flex:1 1 42%}}
+    @media print{header,.bottom,.no-print,#login,#lists{display:none!important}main{padding:0}.card,details{border:0;box-shadow:none}details{display:block}details>summary{display:none}details>.inside{display:block;border:0}}
   </style>
 </head>
 <body>
-<header><div class="head"><div><h1>ANASTASIOU O.E. – Έργα & Μετρήσεις</h1><div class="sub">v5.2 • πλήρης εφαρμογή με κοινό συγχρονισμό</div></div><div id="syncState" class="sync">Τοπική λειτουργία</div></div></header>
+<header><div class="head"><div><h1>ANASTASIOU Μετρήσεις</h1><div class="sub">v5.3 • Πλήρης έκδοση με κοινό συγχρονισμό</div></div><div id="syncState" class="sync">Τοπική λειτουργία</div></div></header>
 <main>
-  <section id="loginCard" class="card">
+  <section id="login" class="card">
     <h2>Σύνδεση</h2>
-    <p class="note">Συνδέσου για να βλέπετε ο Γιώργος και ο Κώστας τα ίδια έργα. Χωρίς σύνδεση, η εφαρμογή συνεχίζει με ασφαλές τοπικό αντίγραφο.</p>
+    <p class="note">Συνδέσου για να βλέπετε ο Γιώργος και ο Κώστας τα ίδια έργα. Χωρίς σύνδεση μπορείς να δουλέψεις προσωρινά μόνο στη συγκεκριμένη συσκευή.</p>
     <div class="grid"><label>Email<input id="loginEmail" type="email" autocomplete="username"></label><label>Κωδικός<input id="loginPassword" type="password" autocomplete="current-password"></label></div>
-    <div class="tools"><button id="loginBtn">Σύνδεση</button><button id="offlineBtn" class="light">Χρήση χωρίς σύνδεση</button></div>
-    <div id="loginMessage"></div>
+    <div class="tools"><button id="loginBtn">Σύνδεση</button><button id="offlineBtn" class="light">Χρήση χωρίς σύνδεση</button></div><div id="loginMessage" class="error"></div>
   </section>
 
   <div id="app" class="hidden">
-    <section class="card no-print">
-      <div class="navtools"><button id="homeBtn" class="light">🏠 Αρχική</button><button id="newBtn" class="light">📝 Νέο έργο</button><button id="projectsBtn" class="light">📁 Έργα</button><button id="customersBtn" class="light">👥 Πελάτες</button><button id="backupBtn" class="light">⚙️ Backup</button><button id="logoutBtn" class="danger">Αποσύνδεση</button></div>
-    </section>
-    <section id="dashboard" class="card no-print">
-      <h2>Αρχική</h2>
-      <div class="stats">
-        <div class="stat"><strong id="offerCount">0</strong><span>Μετρήσεις προσφοράς (Κώστας)</span></div>
-        <div class="stat"><strong id="finalCount">0</strong><span>Τελικές μετρήσεις (Γιώργος)</span></div>
-        <div class="stat"><strong id="doneCount">0</strong><span>Ολοκληρωμένες μετρήσεις</span></div>
-      </div>
-    </section>
+    <section class="card no-print"><div class="nav">
+      <button data-go="dashboard" class="light">🏠 Αρχική</button><button id="newBtn" class="light">📝 Νέο έργο</button><button data-go="lists" class="light">📁 Έργα</button><button data-go="customersCard" class="light">👥 Πελάτες</button><button data-go="backupCard" class="light">⚙️ Backup</button><button id="logoutBtn" class="danger">Αποσύνδεση</button>
+    </div></section>
+
+    <section id="dashboard" class="card no-print"><h2>Αρχική</h2><div class="stats">
+      <div class="stat" data-stage="offer"><strong id="offerCount">0</strong><span>Έργα για μέτρηση προσφοράς (Κώστας)</span></div>
+      <div class="stat" data-stage="final"><strong id="finalCount">0</strong><span>Έργα για τελική μέτρηση (Γιώργος)</span></div>
+      <div class="stat" data-stage="done"><strong id="doneCount">0</strong><span>Ολοκληρωμένες μετρήσεις</span></div>
+    </div></section>
+
     <section id="project" class="card">
-      <h2>Στοιχεία έργου</h2>
-      <input id="id" type="hidden">
+      <h2>Στοιχεία έργου</h2><input id="id" type="hidden">
       <div class="grid3">
         <label>Αρ. έργου<input id="projectNo"></label><label>Ημερομηνία<input id="date" type="date"></label>
         <label>Στάδιο<select id="stage"><option value="offer">Μέτρηση για προσφορά</option><option value="final">Τελική μέτρηση παραγωγής</option><option value="done">Ολοκληρώθηκε</option></select></label>
-        <label>Υπεύθυνος<select id="assignee"><option>Κώστας</option><option>Γιώργος</option></select></label>
+        <label>Ανάθεση σε<select id="assignee"><option>Κώστας</option><option>Γιώργος</option></select></label>
         <label>Ενεργός χρήστης<select id="activeUser"><option>Κώστας</option><option>Γιώργος</option></select></label>
-        <label>Πελάτης<input id="customer"></label><label>Τηλέφωνο<input id="phone" type="tel"></label>
+        <label>Όνομα πελάτη<input id="customer"></label><label>Τηλέφωνο<input id="phone" type="tel"></label>
         <label>Email πελάτη<input id="customerEmail" type="email"></label><label>Διεύθυνση<input id="address"></label>
-        <label>ΑΦΜ<input id="afm"></label><label>ΔΟΥ<input id="doy"></label>
-        <label>Υπεύθυνος μέτρησης<input id="measurer"></label>
+        <label>ΑΦΜ<input id="afm"></label><label>ΔΟΥ<input id="doy"></label><label>Υπεύθυνος μέτρησης<input id="measurer"></label>
         <label>GPS<input id="gps" readonly placeholder="Δεν έχει αποθηκευτεί"></label>
       </div>
-      <div class="tools no-print"><button id="gpsBtn" class="light">📍 Λήψη GPS</button><button id="mapsBtn" class="light">🧭 Μετάβαση</button><button id="callBtn" class="light">📞 Κλήση</button><button id="handoffBtn">Έτοιμο για τελική μέτρηση</button></div>
+      <div class="tools no-print"><button id="gpsBtn" class="light">📍 Λήψη GPS</button><button id="mapsBtn" class="light">🧭 Μετάβαση</button><button id="callBtn" class="light">📞 Κλήση</button><button id="handoffBtn" class="success">Έτοιμο για τελική μέτρηση</button><button id="voiceBtn" class="light">🎤 Φωνητική σημείωση</button></div>
+      <label style="margin-top:9px">Γενικές παρατηρήσεις<textarea id="generalNotes"></textarea></label>
+      <div id="historyBox" class="muted" style="margin-top:8px"></div>
     </section>
 
-    <details open><summary>🪟 Κουφώματα</summary><div class="inside">
-      <div class="tablewrap"><table><thead><tr><th>Α/Α</th><th>Χώρος</th><th>Ύψος</th><th>Φάρδος</th><th>Λάμπας</th><th>Αρμοκάλυπτο</th><th>Τύπος</th><th>Ρολό</th><th>Σίτα</th><th>Παρατηρήσεις</th><th></th></tr></thead><tbody id="windows"></tbody></table></div>
-      <div class="tools no-print"><button id="addRow" class="light">＋ Γραμμή</button><button id="add5" class="light">＋ 5 γραμμές</button></div>
+    <details open><summary>🪟 Κουφώματα</summary><div class="inside"><div class="tablewrap"><table><thead><tr><th>Α/Α</th><th>Χώρος</th><th>Ύψος</th><th>Φάρδος</th><th>Λάμπας</th><th>Αρμοκάλυπτο</th><th>Τύπος κουφώματος</th><th>Ρολό</th><th>Σίτα</th><th>Παρατηρήσεις</th><th></th></tr></thead><tbody id="windows"></tbody></table></div><div class="tools no-print"><button id="addRow" class="light">＋ Μία γραμμή</button><button id="add5" class="light">＋ 5 γραμμές</button><button id="clearRows" class="danger">Καθαρισμός</button></div></div></details>
+
+    <details><summary>☀️ Πέργκολες</summary><div class="inside grid3">
+      <label>Τύπος<input data-extra="pergolaType"></label><label>Μήκος<input data-extra="pergolaLength"></label><label>Πλάτος<input data-extra="pergolaWidth"></label><label>Ύψος<input data-extra="pergolaHeight"></label><label>Κάλυψη<input data-extra="pergolaCover"></label><label>Χρώμα<input data-extra="pergolaColor"></label><label>Φωτισμός LED<select data-extra="pergolaLed"><option></option><option>Ναι</option><option>Όχι</option></select></label><label>Παρατηρήσεις<textarea data-extra="pergolaNotes"></textarea></label>
     </div></details>
-    <details><summary>☀️ Πέργκολες</summary><div class="inside grid3"><label>Μήκος<input data-extra="pergolaLength"></label><label>Πλάτος<input data-extra="pergolaWidth"></label><label>Ύψος<input data-extra="pergolaHeight"></label><label>Κάλυψη<input data-extra="pergolaCover"></label><label>Παρατηρήσεις<textarea data-extra="pergolaNotes"></textarea></label></div></details>
-    <details><summary>🛡️ Κάγκελα</summary><div class="inside grid3"><label>Μήκος<input data-extra="railLength"></label><label>Ύψος<input data-extra="railHeight"></label><label>Σχέδιο<input data-extra="railDesign"></label><label>Παρατηρήσεις<textarea data-extra="railNotes"></textarea></label></div></details>
-    <details><summary>🚪 Μεσόπορτες</summary><div class="inside grid3"><label>Ύψος<input data-extra="doorHeight"></label><label>Φάρδος<input data-extra="doorWidth"></label><label>Λάμπας<input data-extra="doorLampas"></label><label>Φορά<input data-extra="doorDirection"></label><label>Τύπος<input data-extra="doorType"></label><label>Παρατηρήσεις<textarea data-extra="doorNotes"></textarea></label></div></details>
+    <details><summary>🛡️ Κάγκελα</summary><div class="inside grid3">
+      <label>Τύπος<input data-extra="railType"></label><label>Συνολικό μήκος<input data-extra="railLength"></label><label>Ύψος<input data-extra="railHeight"></label><label>Υλικό<input data-extra="railMaterial"></label><label>Χρώμα<input data-extra="railColor"></label><label>Τζάμι<input data-extra="railGlass"></label><label>Σχέδιο<input data-extra="railDesign"></label><label>Παρατηρήσεις<textarea data-extra="railNotes"></textarea></label>
+    </div></details>
+    <details><summary>🚪 Μεσόπορτες</summary><div class="inside grid3">
+      <label>Ποσότητα<input data-extra="doorQuantity"></label><label>Ύψος<input data-extra="doorHeight"></label><label>Φάρδος<input data-extra="doorWidth"></label><label>Διαστάσεις<input data-extra="doorDimensions"></label><label>Λάμπας<input data-extra="doorLampas"></label><label>Τύπος / Μοντέλο<input data-extra="doorType"></label><label>Χρώμα<input data-extra="doorColor"></label><label>Φορά ανοίγματος<input data-extra="doorDirection"></label><label>Κάσα<input data-extra="doorFrame"></label><label>Παρατηρήσεις<textarea data-extra="doorNotes"></textarea></label>
+    </div></details>
     <details><summary>📐 Ειδικές κατασκευές</summary><div class="inside"><label>Ελεύθερη περιγραφή<textarea id="special" class="big"></textarea></label></div></details>
-    <details><summary>📷 Φωτογραφίες έργου</summary><div class="inside"><p class="note">Οι φωτογραφίες αποθηκεύονται τοπικά στη συγκεκριμένη συσκευή. Τα υπόλοιπα στοιχεία συγχρονίζονται online.</p><input id="photoInput" type="file" accept="image/*" multiple><div class="tools no-print"><button id="clearPhotosBtn" type="button" class="danger">Διαγραφή όλων των φωτογραφιών</button></div><div id="photos" class="photos"></div></div></details>
-
+    <details><summary>📷 Φωτογραφίες έργου</summary><div class="inside"><p class="note">Οι φωτογραφίες αποθηκεύονται μαζί με το έργο στη συγκεκριμένη συσκευή. Για κοινές φωτογραφίες σε όλες τις συσκευές απαιτείται ενεργοποίηση Firebase Storage.</p><input id="photoInput" type="file" accept="image/*" multiple><div class="tools no-print"><button id="clearPhotosBtn" class="danger">Διαγραφή όλων</button></div><div id="photos" class="photos"></div></div></details>
     <details><summary>🧰 Υλικά έργου</summary><div class="inside grid3">
-      <label>Προφίλ / Εταιρεία<input data-extra="materialProfile"></label>
-      <label>Σύστημα<input data-extra="materialSystem"></label>
-      <label>Χρώμα<input data-extra="materialColor"></label>
-      <label>Τζάμι<input data-extra="materialGlass"></label>
-      <label>Σίτες<input data-extra="materialScreens"></label>
-      <label>Ρολά / Παντζούρια<input data-extra="materialRollers"></label>
-      <label>Μηχανισμοί<input data-extra="materialHardware"></label>
-      <label>Λοιπά υλικά<textarea data-extra="materialOther"></textarea></label>
+      <label>Προφίλ / Εταιρεία<input data-extra="materialProfile"></label><label>Σύστημα<input data-extra="materialSystem"></label><label>Χρώμα<input data-extra="materialColor"></label><label>Τζάμι<input data-extra="materialGlass"></label><label>Σίτες<input data-extra="materialScreens"></label><label>Ρολά / Παντζούρια<input data-extra="materialRollers"></label><label>Μηχανισμοί<input data-extra="materialHardware"></label><label>Λοιπά υλικά<textarea data-extra="materialOther"></textarea></label>
     </div></details>
 
-    <section id="projectListCard" class="card no-print"><h2>Αποθηκευμένα έργα</h2><div class="grid"><label>Αναζήτηση<input id="search" placeholder="Πελάτης, τηλέφωνο, αρ. έργου ή διεύθυνση"></label><label>Φίλτρο σταδίου<select id="stageFilter"><option value="">Όλα τα έργα</option><option value="offer">Μέτρηση προσφοράς</option><option value="final">Τελική μέτρηση</option><option value="done">Ολοκληρωμένα</option></select></label></div><div id="projectList" class="list" style="margin-top:10px"></div></section>
-
-    <section id="customersCard" class="card no-print"><h2>Πελάτες</h2><input id="customerSearch" placeholder="Όνομα, τηλέφωνο ή email"><div id="customerList" class="list" style="margin-top:10px"></div></section>
-
-    <section id="backupCard" class="card no-print"><h2>Backup και μεταφορά</h2><p class="note">Κατέβασε αντίγραφο όλων των έργων ή εισήγαγε παλιό backup. Τα έργα που εισάγονται συγχρονίζονται στο Firebase όταν είσαι συνδεδεμένος.</p><div class="tools"><button id="exportBtn" type="button">⬇️ Εξαγωγή όλων</button><button id="importBtn" type="button" class="light">⬆️ Εισαγωγή backup</button><input id="importFile" type="file" accept=".json,application/json" hidden></div><div id="backupStatus" class="muted"></div></section>
+    <div id="lists">
+      <section id="projectListCard" class="card no-print"><h2>Αποθηκευμένα έργα</h2><div class="grid"><label>Αναζήτηση<input id="search" placeholder="Πελάτης, τηλέφωνο, αρ. έργου ή διεύθυνση"></label><label>Φίλτρο σταδίου<select id="stageFilter"><option value="">Όλα τα έργα</option><option value="offer">Μέτρηση προσφοράς</option><option value="final">Τελική μέτρηση</option><option value="done">Ολοκληρωμένα</option></select></label></div><div id="projectList" class="list" style="margin-top:10px"></div></section>
+      <section id="customersCard" class="card no-print"><h2>Πελάτες</h2><input id="customerSearch" placeholder="Όνομα, τηλέφωνο ή email"><div id="customerList" class="list" style="margin-top:10px"></div></section>
+      <section id="backupCard" class="card no-print"><h2>Backup και μεταφορά</h2><p class="note">Κατέβασε αντίγραφο όλων των έργων ή εισήγαγε παλιό backup. Αν είσαι συνδεδεμένος, τα έργα που εισάγονται συγχρονίζονται και στο Firebase.</p><div class="tools"><button id="exportBtn">⬇️ Εξαγωγή όλων</button><button id="importBtn" class="light">⬆️ Εισαγωγή backup</button><input id="importFile" type="file" accept=".json,application/json" hidden></div><div id="backupStatus" class="muted"></div></section>
+    </div>
   </div>
 </main>
-<div id="bottomBar" class="bar hidden"><div><button id="saveBtn">💾 Αποθήκευση</button><button id="shareBtn" class="light">📤 Κοινοποίηση</button><button id="printBtn" class="light">🖨 PDF / Εκτύπωση</button></div></div>
-
+<div id="bottomBar" class="bottom hidden"><div><button id="saveBtn">💾 Αποθήκευση</button><button id="shareBtn" class="light">📤 Κοινοποίηση</button><button id="printBtn" class="light">🖨️ PDF / Εκτύπωση</button></div></div>
 <script type="module" src="app.js"></script>
 </body>
 </html>
