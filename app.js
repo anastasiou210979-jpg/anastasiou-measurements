@@ -442,19 +442,41 @@ let voiceActive = false;
 let voiceTimer = null;
 let voiceTarget = null;
 
-$("#app").addEventListener("focusin", event => {
+function voiceTargetName(field) {
+  const header = field.closest("td")?.parentElement?.parentElement?.previousElementSibling
+    ?.querySelectorAll("th")?.[field.closest("td")?.cellIndex]?.textContent?.trim();
+  if (header) return header;
+  const label = field.closest("label");
+  if (label) return label.childNodes[0]?.textContent?.trim() || "επιλεγμένο πεδίο";
+  return field.placeholder || "επιλεγμένο πεδίο";
+}
+
+function showVoiceTarget() {
+  voiceBtn.textContent = voiceTarget
+    ? `🎤 Στο πεδίο: ${voiceTargetName(voiceTarget)}`
+    : "🎤 Επίλεξε πρώτα πεδίο";
+}
+
+function rememberVoiceTarget(event) {
   const field = event.target;
   if (!field.matches("input:not([type='hidden']):not([type='file']), textarea")) return;
   if (field.readOnly || field.disabled) return;
+  voiceTarget?.classList.remove("voice-selected");
   voiceTarget = field;
-});
+  voiceTarget.classList.add("voice-selected");
+  if (!voiceActive) showVoiceTarget();
+}
+
+$("#app").addEventListener("focusin", rememberVoiceTarget, true);
+$("#app").addEventListener("pointerdown", rememberVoiceTarget, true);
+$("#app").addEventListener("touchstart", rememberVoiceTarget, true);
 
 function resetVoiceButton() {
   voiceActive = false;
   clearTimeout(voiceTimer);
   voiceTimer = null;
   voiceBtn.disabled = false;
-  voiceBtn.textContent = "🎤 Φωνητική καταχώριση";
+  showVoiceTarget();
 }
 
 function stopVoiceRecognition() {
