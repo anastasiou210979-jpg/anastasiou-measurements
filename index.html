@@ -18,7 +18,6 @@
     .card{padding:13px}details{overflow:hidden}summary{padding:14px;color:var(--blue);font-weight:850;cursor:pointer}.inside{border-top:1px solid var(--line);padding:12px}
     h2{font-size:18px;margin:0 0 11px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
     label{display:grid;gap:5px;font-size:13px;font-weight:750;color:#344054}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;background:#fff;color:#172033}
-    .voice-selected{outline:3px solid #f5a623!important;outline-offset:1px}
     textarea{min-height:85px;resize:vertical}.big{min-height:190px}.tools,.nav{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
     button,.button{border:0;border-radius:10px;padding:10px 12px;background:var(--blue);color:#fff;font-weight:800;cursor:pointer;text-decoration:none}.light{background:#eaf1f8;color:var(--blue)}.danger{background:#feecea;color:var(--bad)}.success{background:var(--ok)}
     .note{padding:10px;border-radius:10px;background:#eef6ff;border-left:4px solid var(--blue);font-size:13px}.hidden{display:none!important}.muted{color:#667085;font-size:13px}.error{color:var(--bad)}
@@ -65,7 +64,7 @@
         <label>ΑΦΜ<input id="afm"></label><label>ΔΟΥ<input id="doy"></label><label>Υπεύθυνος μέτρησης<input id="measurer"></label>
         <label>GPS<input id="gps" readonly placeholder="Δεν έχει αποθηκευτεί"></label>
       </div>
-      <div class="tools no-print"><button id="gpsBtn" class="light">📍 Λήψη GPS</button><button id="mapsBtn" class="light">🧭 Μετάβαση</button><button id="callBtn" class="light">📞 Κλήση</button><button id="handoffBtn" class="success">Έτοιμο για τελική μέτρηση</button><button id="voiceBtn" class="light">🎤 Επίλεξε πρώτα πεδίο</button></div>
+      <div class="tools no-print"><button id="gpsBtn" class="light">📍 Λήψη GPS</button><button id="mapsBtn" class="light">🧭 Μετάβαση</button><button id="callBtn" class="light">📞 Κλήση</button><button id="handoffBtn" class="success">Έτοιμο για τελική μέτρηση</button></div>
       <label style="margin-top:9px">Γενικές παρατηρήσεις<textarea id="generalNotes"></textarea></label>
       <div id="historyBox" class="muted" style="margin-top:8px"></div>
     </section>
@@ -95,6 +94,6 @@
   </div>
 </main>
 <div id="bottomBar" class="bottom hidden"><div><button id="saveBtn">💾 Αποθήκευση</button><button id="shareBtn" class="light">📤 Κοινοποίηση</button><button id="printBtn" class="light">🖨️ PDF / Εκτύπωση</button></div></div>
-<script type="module" src="app.js?v=20260729-voice-target-2"></script>
+<script type="module" src="app.js?v=20260729-no-voice"></script>
 </body>
 </html>
