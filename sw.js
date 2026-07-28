@@ -1,5 +1,5 @@
-const CACHE = "anastasiou-v5-3-20260728";
-const ASSETS = ["./", "./index.html", "./app.js", "./firebase-config.js", "./manifest.webmanifest"];
+const CACHE = "anastasiou-v5-3-icon-20260728";
+const ASSETS = ["./", "./index.html", "./app.js", "./firebase-config.js", "./manifest.webmanifest", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
 self.addEventListener("install", event => event.waitUntil(
   caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())
 ));
