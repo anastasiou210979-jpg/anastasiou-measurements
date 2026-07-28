@@ -1,0 +1,10 @@
+{
+  "name": "ANASTASIOU Μετρήσεις",
+  "short_name": "Μετρήσεις",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6fa",
+  "theme_color": "#0b3a78",
+  "lang": "el"
+}
