@@ -436,19 +436,72 @@ $("#importFile").onchange = async event => {
 };
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-if (!SpeechRecognition) $("#voiceBtn").classList.add("hidden");
-else $("#voiceBtn").onclick = () => {
-  const recognition = new SpeechRecognition();
-  recognition.lang = "el-GR";
-  recognition.interimResults = false;
-  recognition.onstart = () => { $("#voiceBtn").textContent = "🎤 Μίλα τώρα…"; };
-  recognition.onresult = event => {
-    const text = event.results[0][0].transcript;
-    $("#generalNotes").value += `${$("#generalNotes").value ? "\n" : ""}${text}`;
+const voiceBtn = $("#voiceBtn");
+let voiceRecognition = null;
+let voiceActive = false;
+let voiceTimer = null;
+
+function resetVoiceButton() {
+  voiceActive = false;
+  clearTimeout(voiceTimer);
+  voiceTimer = null;
+  voiceBtn.disabled = false;
+  voiceBtn.textContent = "🎤 Φωνητική σημείωση";
+}
+
+function stopVoiceRecognition() {
+  if (!voiceRecognition) return resetVoiceButton();
+  try { voiceRecognition.stop(); }
+  catch { resetVoiceButton(); }
+}
+
+if (!SpeechRecognition) {
+  voiceBtn.onclick = () => alert("Η φωνητική σημείωση δεν υποστηρίζεται από αυτόν τον browser. Χρησιμοποίησε το πληκτρολόγιο του κινητού και πάτησε το εικονίδιο του μικροφώνου.");
+} else {
+  voiceBtn.onclick = () => {
+    if (voiceActive) return stopVoiceRecognition();
+
+    voiceRecognition = new SpeechRecognition();
+    voiceRecognition.lang = "el-GR";
+    voiceRecognition.interimResults = false;
+    voiceRecognition.continuous = false;
+    voiceRecognition.maxAlternatives = 1;
+
+    voiceRecognition.onstart = () => {
+      voiceActive = true;
+      voiceBtn.textContent = "⏹ Σταμάτημα";
+      voiceTimer = setTimeout(stopVoiceRecognition, 12000);
+    };
+    voiceRecognition.onresult = event => {
+      const text = event.results?.[0]?.[0]?.transcript?.trim();
+      if (!text) return;
+      const notes = $("#generalNotes");
+      notes.value += `${notes.value ? "\n" : ""}${text}`;
+      notes.dispatchEvent(new Event("input", { bubbles: true }));
+    };
+    voiceRecognition.onerror = event => {
+      resetVoiceButton();
+      if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+        alert("Δεν δόθηκε άδεια στο μικρόφωνο. Ενεργοποίησε την πρόσβαση μικροφώνου για τον Safari ή τον Chrome από τις Ρυθμίσεις του κινητού.");
+      } else if (event.error !== "no-speech" && event.error !== "aborted") {
+        alert("Η φωνητική σημείωση δεν ξεκίνησε. Δοκίμασε ξανά ή χρησιμοποίησε το μικρόφωνο του πληκτρολογίου.");
+      }
+    };
+    voiceRecognition.onend = resetVoiceButton;
+
+    try {
+      voiceBtn.disabled = true;
+      voiceBtn.textContent = "🎤 Εκκίνηση…";
+      voiceRecognition.start();
+      setTimeout(() => { if (!voiceActive) resetVoiceButton(); }, 3000);
+    } catch {
+      resetVoiceButton();
+      alert("Η φωνητική σημείωση δεν είναι διαθέσιμη αυτή τη στιγμή.");
+    }
   };
-  recognition.onend = () => { $("#voiceBtn").textContent = "🎤 Φωνητική σημείωση"; };
-  recognition.start();
-};
+}
+
+window.addEventListener("pagehide", stopVoiceRecognition);
 
 $("#app").addEventListener("input", () => {
   clearTimeout(saveTimer);
