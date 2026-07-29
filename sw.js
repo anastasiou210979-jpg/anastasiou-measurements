@@ -1,5 +1,5 @@
-const CACHE = "anastasiou-v5-3-share-pdf-20260729";
-const ASSETS = ["./", "./index.html", "./app.js?v=20260729-share-pdf", "./firebase-config.js", "./manifest.webmanifest", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
+const CACHE = "anastasiou-v5-3-share-pdf-2-20260729";
+const ASSETS = ["./", "./index.html", "./app.js?v=20260729-share-pdf-2", "./firebase-config.js", "./manifest.webmanifest", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
 self.addEventListener("install", event => event.waitUntil(
   caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())
 ));

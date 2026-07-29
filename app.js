@@ -409,9 +409,7 @@ async function shareProject() {
       pagebreak:{mode:["css","legacy"],avoid:["tr","figure",".pdf-info"]}
     }).from(report).outputPdf("blob");
     const file = new File([blob], filename, {type:"application/pdf"});
-    if (navigator.canShare?.({files:[file]})) {
-      await navigator.share({files:[file],title:`Μετρήσεις ${project.projectNo || ""}`,text:`ANASTASIOU O.E. — ${project.customer || "Έργο"}`});
-    } else {
+    const savePdf = () => {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -420,6 +418,17 @@ async function shareProject() {
       link.click();
       link.remove();
       setTimeout(() => URL.revokeObjectURL(url), 3000);
+    };
+    if (navigator.canShare?.({files:[file]})) {
+      try {
+        await navigator.share({files:[file],title:`Μετρήσεις ${project.projectNo || ""}`,text:`ANASTASIOU O.E. — ${project.customer || "Έργο"}`});
+      } catch (shareError) {
+        if (shareError?.name === "AbortError") return;
+        savePdf();
+        alert("Το PDF αποθηκεύτηκε. Άνοιξέ το από τα Αρχεία για να το στείλεις.");
+      }
+    } else {
+      savePdf();
       alert("Το PDF αποθηκεύτηκε. Μπορείς να το στείλεις από τα Αρχεία.");
     }
   } catch (error) {
