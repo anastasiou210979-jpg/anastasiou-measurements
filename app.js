@@ -129,10 +129,12 @@ function clearForm() {
   renderHistory([]);
   location.hash = "#project";
 }
-function highestExistingProjectNumber() {
+function highestExistingProjectNumber(year) {
+  const prefix = `${year}-`;
   return projects.reduce((highest, project) => {
-    const groups = String(project.projectNo || "").match(/\d+/g);
-    const number = groups?.length ? Number(groups.at(-1)) : 0;
+    const projectNumber = String(project.projectNo || "");
+    if (!projectNumber.startsWith(prefix)) return highest;
+    const number = Number(projectNumber.slice(prefix.length));
     return Number.isFinite(number) ? Math.max(highest, number) : highest;
   }, 0);
 }
@@ -141,8 +143,9 @@ async function assignNextProjectNumber() {
     alert("Για ασφαλή αυτόματη αρίθμηση συνδέσου στο Internet και στον λογαριασμό σου.");
     return false;
   }
-  const counterRef = doc(db, "projects", "_counter");
-  const localMaximum = highestExistingProjectNumber();
+  const year = new Date().getFullYear();
+  const counterRef = doc(db, "projects", `_counter_${year}`);
+  const localMaximum = highestExistingProjectNumber(year);
   try {
     setSync("⏳ Νέος αριθμός έργου…");
     const next = await runTransaction(db, async transaction => {
@@ -152,7 +155,7 @@ async function assignNextProjectNumber() {
       transaction.set(counterRef, {value, updatedAt:serverTimestamp()});
       return value;
     });
-    $("#projectNo").value = String(next).padStart(4, "0");
+    $("#projectNo").value = `${year}-${String(next).padStart(3, "0")}`;
     setSync("☁️ Συγχρονίστηκε", "ok");
     return true;
   } catch {
@@ -282,7 +285,7 @@ function subscribeToProjects() {
   unsubscribe?.();
   unsubscribe = onSnapshot(collection(db, "projects"), snapshot => {
     const cloud = snapshot.docs
-      .filter(document => document.id !== "_counter")
+      .filter(document => !document.id.startsWith("_counter"))
       .map(document => migrateProject({id:document.id, ...document.data()}));
     const local = readLocal();
     const merged = new Map(local.map(project => [project.id, project]));
