@@ -330,15 +330,105 @@ function messageBody() {
     project.special ? `\nΕΙΔΙΚΕΣ ΚΑΤΑΣΚΕΥΕΣ\n${project.special}` : ""
   ].filter(Boolean).join("\n");
 }
+function reportValue(value) {
+  return escapeHtml(String(value || "").trim() || "—");
+}
+function reportDetails(title, rows) {
+  const filled = rows.filter(([,value]) => String(value || "").trim());
+  if (!filled.length) return "";
+  return `<section class="pdf-section"><h2>${escapeHtml(title)}</h2><table class="pdf-details"><tbody>${
+    filled.map(([label,value]) => `<tr><th>${escapeHtml(label)}</th><td>${reportValue(value)}</td></tr>`).join("")
+  }</tbody></table></section>`;
+}
+function buildPdfReport() {
+  const project = collectProject();
+  const rows = project.windows.filter(row => Object.values(row).some(value => String(value).trim()));
+  const extra = project.extra || {};
+  const report = document.createElement("div");
+  report.className = "pdf-report";
+  report.innerHTML = `
+    <style>
+      .pdf-report{width:1080px;background:#fff;color:#172033;font:16px Arial,sans-serif;padding:32px}
+      .pdf-report *{box-sizing:border-box}.pdf-head{display:flex;align-items:center;justify-content:space-between;border-bottom:5px solid #0b3a78;padding-bottom:16px;margin-bottom:18px}
+      .pdf-head img{max-width:240px;max-height:82px;object-fit:contain}.pdf-title{text-align:right}.pdf-title h1{margin:0;color:#0b3a78;font-size:28px}.pdf-title p{margin:6px 0 0;font-size:17px}
+      .pdf-info{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 18px;background:#edf4fc;border:1px solid #c8d9ec;border-radius:10px;padding:15px;margin-bottom:18px}
+      .pdf-info div{min-height:42px}.pdf-info b{display:block;color:#0b3a78;font-size:13px;margin-bottom:4px}
+      .pdf-section{margin-top:18px;break-inside:avoid}.pdf-section h2{margin:0 0 8px;background:#0b3a78;color:#fff;padding:8px 11px;font-size:19px}
+      .pdf-table,.pdf-details{width:100%;border-collapse:collapse;font-size:13px}.pdf-table th,.pdf-table td,.pdf-details th,.pdf-details td{border:1px solid #9eabb9;padding:6px;vertical-align:top}
+      .pdf-table th,.pdf-details th{background:#e8eef5;color:#0b3a78;font-weight:700}.pdf-details th{width:28%;text-align:left}.pdf-notes{white-space:pre-wrap;border:1px solid #9eabb9;padding:12px;min-height:52px}
+      .pdf-photos{display:grid;grid-template-columns:1fr 1fr;gap:14px}.pdf-photos figure{margin:0;break-inside:avoid}.pdf-photos img{width:100%;max-height:430px;object-fit:contain;border:1px solid #9eabb9}
+      .pdf-footer{margin-top:22px;padding-top:9px;border-top:1px solid #9eabb9;color:#667085;font-size:12px;text-align:right}
+    </style>
+    <header class="pdf-head">
+      <img src="logo.png" alt="ANASTASIOU O.E.">
+      <div class="pdf-title"><h1>ΔΕΛΤΙΟ ΜΕΤΡΗΣΕΩΝ</h1><p>Έργο ${reportValue(project.projectNo)}</p></div>
+    </header>
+    <div class="pdf-info">
+      <div><b>Ημερομηνία</b>${reportValue(project.date)}</div><div><b>Στάδιο</b>${reportValue(stageName(project.stage))}</div><div><b>Ανάθεση σε</b>${reportValue(project.assignee)}</div>
+      <div><b>Πελάτης</b>${reportValue(project.customer)}</div><div><b>Τηλέφωνο</b>${reportValue(project.phone)}</div><div><b>Email</b>${reportValue(project.customerEmail)}</div>
+      <div><b>Διεύθυνση</b>${reportValue(project.address)}</div><div><b>ΑΦΜ</b>${reportValue(project.afm)}</div><div><b>ΔΟΥ</b>${reportValue(project.doy)}</div>
+      <div><b>Υπεύθυνος μέτρησης</b>${reportValue(project.measurer)}</div><div><b>GPS</b>${reportValue(project.gps)}</div><div><b>Ενημέρωση από</b>${reportValue(project.updatedBy)}</div>
+    </div>
+    ${rows.length ? `<section class="pdf-section"><h2>Κουφώματα</h2><table class="pdf-table"><thead><tr><th>Α/Α</th><th>Χώρος</th><th>Ύψος</th><th>Φάρδος</th><th>Λάμπας</th><th>Αρμοκάλυπτο</th><th>Τύπος</th><th>Ρολό</th><th>Σίτα</th><th>Παρατηρήσεις</th></tr></thead><tbody>${
+      rows.map((row,index) => `<tr><td>${index+1}</td><td>${reportValue(row.room)}</td><td>${reportValue(row.height)}</td><td>${reportValue(row.width)}</td><td>${reportValue(row.lampas)}</td><td>${reportValue(row.armokalipto)}</td><td>${reportValue(row.type)}</td><td>${reportValue(row.roller)}</td><td>${reportValue(row.screen)}</td><td>${reportValue(row.notes)}</td></tr>`).join("")
+    }</tbody></table></section>` : ""}
+    ${reportDetails("Πέργκολα", [["Τύπος",extra.pergolaType],["Μήκος",extra.pergolaLength],["Πλάτος",extra.pergolaWidth],["Ύψος",extra.pergolaHeight],["Κάλυψη",extra.pergolaCover],["Χρώμα",extra.pergolaColor],["Φωτισμός LED",extra.pergolaLed],["Παρατηρήσεις",extra.pergolaNotes]])}
+    ${reportDetails("Κάγκελα", [["Τύπος",extra.railType],["Συνολικό μήκος",extra.railLength],["Ύψος",extra.railHeight],["Υλικό",extra.railMaterial],["Χρώμα",extra.railColor],["Τζάμι",extra.railGlass],["Σχέδιο",extra.railDesign],["Παρατηρήσεις",extra.railNotes]])}
+    ${reportDetails("Μεσόπορτες", [["Ποσότητα",extra.doorQuantity],["Ύψος",extra.doorHeight],["Φάρδος",extra.doorWidth],["Διαστάσεις",extra.doorDimensions],["Λάμπας",extra.doorLampas],["Τύπος / Μοντέλο",extra.doorType],["Χρώμα",extra.doorColor],["Φορά ανοίγματος",extra.doorDirection],["Κάσα",extra.doorFrame],["Παρατηρήσεις",extra.doorNotes]])}
+    ${project.special ? `<section class="pdf-section"><h2>Ειδικές κατασκευές</h2><div class="pdf-notes">${escapeHtml(project.special)}</div></section>` : ""}
+    ${reportDetails("Υλικά έργου", [["Προφίλ / Εταιρεία",extra.materialProfile],["Σύστημα",extra.materialSystem],["Χρώμα",extra.materialColor],["Τζάμι",extra.materialGlass],["Σίτες",extra.materialScreens],["Ρολά / Παντζούρια",extra.materialRollers],["Μηχανισμοί",extra.materialHardware],["Λοιπά υλικά",extra.materialOther]])}
+    ${project.generalNotes ? `<section class="pdf-section"><h2>Γενικές παρατηρήσεις</h2><div class="pdf-notes">${escapeHtml(project.generalNotes)}</div></section>` : ""}
+    ${photos.length ? `<section class="pdf-section"><h2>Φωτογραφίες έργου</h2><div class="pdf-photos">${photos.map((src,index) => `<figure><img src="${src}" alt="Φωτογραφία ${index+1}"></figure>`).join("")}</div></section>` : ""}
+    <footer class="pdf-footer">ANASTASIOU O.E. • Δημιουργήθηκε ${new Date().toLocaleString("el-GR")}</footer>`;
+  report.style.position = "fixed";
+  report.style.left = "-12000px";
+  report.style.top = "0";
+  document.body.appendChild(report);
+  return {report, project};
+}
 async function shareProject() {
-  const text = messageBody();
+  if (!window.html2pdf) {
+    alert("Δεν φορτώθηκε η δημιουργία PDF. Έλεγξε τη σύνδεση στο Internet και δοκίμασε ξανά.");
+    return;
+  }
+  const button = $("#shareBtn");
+  const oldText = button.textContent;
+  button.disabled = true;
+  button.textContent = "⏳ Δημιουργία PDF…";
+  const {report, project} = buildPdfReport();
+  const safeNumber = String(project.projectNo || "ΝΕΟ-ΕΡΓΟ").replace(/[^\p{L}\p{N}_-]+/gu, "_");
+  const filename = `ANASTASIOU_${safeNumber}.pdf`;
   try {
-    if (navigator.share) await navigator.share({title:"ANASTASIOU Μετρήσεις", text});
-    else {
-      await navigator.clipboard.writeText(text);
-      alert("Τα στοιχεία αντιγράφηκαν. Μπορείς να τα επικολλήσεις σε Gmail, Viber ή WhatsApp.");
+    await new Promise(resolve => setTimeout(resolve, 150));
+    const blob = await window.html2pdf().set({
+      margin:[7,7,7,7],
+      filename,
+      image:{type:"jpeg",quality:.94},
+      html2canvas:{scale:1.45,useCORS:true,backgroundColor:"#ffffff"},
+      jsPDF:{unit:"mm",format:"a4",orientation:"landscape"},
+      pagebreak:{mode:["css","legacy"],avoid:["tr","figure",".pdf-info"]}
+    }).from(report).outputPdf("blob");
+    const file = new File([blob], filename, {type:"application/pdf"});
+    if (navigator.canShare?.({files:[file]})) {
+      await navigator.share({files:[file],title:`Μετρήσεις ${project.projectNo || ""}`,text:`ANASTASIOU O.E. — ${project.customer || "Έργο"}`});
+    } else {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 3000);
+      alert("Το PDF αποθηκεύτηκε. Μπορείς να το στείλεις από τα Αρχεία.");
     }
-  } catch {}
+  } catch (error) {
+    if (error?.name !== "AbortError") alert("Δεν δημιουργήθηκε το PDF. Δοκίμασε ξανά ή χρησιμοποίησε το κουμπί PDF / Εκτύπωση.");
+  } finally {
+    report.remove();
+    button.disabled = false;
+    button.textContent = oldText;
+  }
 }
 function renderPhotos() {
   const gallery = $("#photos");
