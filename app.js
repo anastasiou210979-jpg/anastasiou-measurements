@@ -191,7 +191,14 @@ function localUpsert(project) {
   renderAll();
 }
 async function saveProject(silent = false, action = "Αποθήκευση μέτρησης") {
-  const project = collectProject();
+  const isNewProject = !$("#id").value;
+  let project = collectProject();
+  if (isNewProject && !project.projectNo) {
+    if (silent) return false;
+    const numbered = await assignNextProjectNumber();
+    if (!numbered) return false;
+    project = collectProject();
+  }
   if (!project.projectNo && !project.customer) {
     if (!silent) alert("Γράψε αριθμό έργου ή όνομα πελάτη.");
     return false;
@@ -217,9 +224,33 @@ async function saveProject(silent = false, action = "Αποθήκευση μέτ
 }
 async function removeProject(id) {
   if (!confirm("Να διαγραφεί το έργο;")) return;
-  writeLocal(readLocal().filter(project => project.id !== id));
+  const beforeDelete = readLocal();
+  const deletedProject = beforeDelete.find(project => project.id === id);
+  const remaining = beforeDelete.filter(project => project.id !== id);
+  writeLocal(remaining);
   localStorage.removeItem(`${PHOTO_KEY}_${id}`);
-  if (currentUser && !offlineMode) try { await deleteDoc(doc(db, "projects", id)); } catch {}
+  if (currentUser && !offlineMode) {
+    try {
+      await deleteDoc(doc(db, "projects", id));
+      const match = String(deletedProject?.projectNo || "").match(/^(\d{4})-(\d+)$/);
+      if (match) {
+        const year = Number(match[1]);
+        const deletedNumber = Number(match[2]);
+        const remainingMaximum = remaining.reduce((highest, project) => {
+          const numberMatch = String(project.projectNo || "").match(new RegExp(`^${year}-(\\d+)$`));
+          return numberMatch ? Math.max(highest, Number(numberMatch[1])) : highest;
+        }, 0);
+        await runTransaction(db, async transaction => {
+          const counterRef = doc(db, "projects", `_counter_${year}`);
+          const snapshot = await transaction.get(counterRef);
+          const stored = Number(snapshot.data()?.value || 0);
+          if (stored === deletedNumber && remainingMaximum < deletedNumber) {
+            transaction.set(counterRef, {value:remainingMaximum, updatedAt:serverTimestamp()});
+          }
+        });
+      }
+    } catch {}
+  }
   projects = readLocal();
   renderAll();
 }
@@ -506,7 +537,6 @@ $("#offlineBtn").onclick = () => { offlineMode=true; setSync("📴 Τοπική 
 $("#logoutBtn").onclick = () => signOut(auth);
 $("#newBtn").onclick = async () => {
   clearForm();
-  await assignNextProjectNumber();
 };
 $$("[data-go]").forEach(button => button.onclick = () => { location.hash = `#${button.dataset.go}`; });
 $$(".stat").forEach(card => card.onclick = () => { $("#stageFilter").value=card.dataset.stage; renderProjects(); location.hash="#projectListCard"; });
@@ -571,7 +601,7 @@ $("#importFile").onchange = async event => {
 $("#app").addEventListener("input", () => {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
-    if ($("#id").value || $("#projectNo").value || $("#customer").value) saveProject(true);
+    if ($("#id").value || $("#projectNo").value) saveProject(true);
   }, 1500);
 });
 window.addEventListener("online", () => { if (currentUser) { setSync("⏳ Επανασύνδεση…"); subscribeToProjects(); } });
