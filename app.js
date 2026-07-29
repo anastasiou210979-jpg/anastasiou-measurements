@@ -380,14 +380,15 @@ function buildPdfReport() {
     ${project.generalNotes ? `<section class="pdf-section"><h2>Γενικές παρατηρήσεις</h2><div class="pdf-notes">${escapeHtml(project.generalNotes)}</div></section>` : ""}
     ${photos.length ? `<section class="pdf-section"><h2>Φωτογραφίες έργου</h2><div class="pdf-photos">${photos.map((src,index) => `<figure><img src="${src}" alt="Φωτογραφία ${index+1}"></figure>`).join("")}</div></section>` : ""}
     <footer class="pdf-footer">ANASTASIOU O.E. • Δημιουργήθηκε ${new Date().toLocaleString("el-GR")}</footer>`;
-  report.style.position = "fixed";
-  report.style.left = "-12000px";
-  report.style.top = "0";
+  report.style.position = "absolute";
+  report.style.left = "0";
+  report.style.top = `${window.scrollY}px`;
+  report.style.zIndex = "99999";
   document.body.appendChild(report);
   return {report, project};
 }
 async function shareProject() {
-  if (!window.html2pdf) {
+  if (!window.createProjectPdfBlob) {
     alert("Δεν φορτώθηκε η δημιουργία PDF. Έλεγξε τη σύνδεση στο Internet και δοκίμασε ξανά.");
     return;
   }
@@ -395,19 +396,11 @@ async function shareProject() {
   const oldText = button.textContent;
   button.disabled = true;
   button.textContent = "⏳ Δημιουργία PDF…";
-  const {report, project} = buildPdfReport();
+  const project = collectProject();
   const safeNumber = String(project.projectNo || "ΝΕΟ-ΕΡΓΟ").replace(/[^\p{L}\p{N}_-]+/gu, "_");
   const filename = `ANASTASIOU_${safeNumber}.pdf`;
   try {
-    await new Promise(resolve => setTimeout(resolve, 150));
-    const blob = await window.html2pdf().set({
-      margin:[7,7,7,7],
-      filename,
-      image:{type:"jpeg",quality:.94},
-      html2canvas:{scale:1.45,useCORS:true,backgroundColor:"#ffffff"},
-      jsPDF:{unit:"mm",format:"a4",orientation:"landscape"},
-      pagebreak:{mode:["css","legacy"],avoid:["tr","figure",".pdf-info"]}
-    }).from(report).outputPdf("blob");
+    const blob = await window.createProjectPdfBlob(project, photos, stageName(project.stage));
     const file = new File([blob], filename, {type:"application/pdf"});
     const savePdf = () => {
       const url = URL.createObjectURL(blob);
@@ -419,7 +412,8 @@ async function shareProject() {
       link.remove();
       setTimeout(() => URL.revokeObjectURL(url), 3000);
     };
-    if (navigator.canShare?.({files:[file]})) {
+    const forceDownload = new URLSearchParams(location.search).has("downloadPdf");
+    if (!forceDownload && navigator.canShare?.({files:[file]})) {
       try {
         await navigator.share({files:[file],title:`Μετρήσεις ${project.projectNo || ""}`,text:`ANASTASIOU O.E. — ${project.customer || "Έργο"}`});
       } catch (shareError) {
@@ -432,9 +426,9 @@ async function shareProject() {
       alert("Το PDF αποθηκεύτηκε. Μπορείς να το στείλεις από τα Αρχεία.");
     }
   } catch (error) {
+    console.error("PDF creation failed", error);
     if (error?.name !== "AbortError") alert("Δεν δημιουργήθηκε το PDF. Δοκίμασε ξανά ή χρησιμοποίησε το κουμπί PDF / Εκτύπωση.");
   } finally {
-    report.remove();
     button.disabled = false;
     button.textContent = oldText;
   }
