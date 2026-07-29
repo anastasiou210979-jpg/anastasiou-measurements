@@ -55,7 +55,7 @@
     <section id="project" class="card">
       <h2>Στοιχεία έργου</h2><input id="id" type="hidden">
       <div class="grid3">
-        <label>Αρ. έργου<input id="projectNo"></label><label>Ημερομηνία<input id="date" type="date"></label>
+        <label>Αρ. έργου<input id="projectNo" readonly placeholder="Δίνεται αυτόματα"></label><label>Ημερομηνία<input id="date" type="date"></label>
         <label>Στάδιο<select id="stage"><option value="offer">Μέτρηση για προσφορά</option><option value="final">Τελική μέτρηση παραγωγής</option><option value="done">Ολοκληρώθηκε</option></select></label>
         <label>Ανάθεση σε<select id="assignee"><option>Κώστας</option><option>Γιώργος</option></select></label>
         <label>Ενεργός χρήστης<select id="activeUser"><option>Κώστας</option><option>Γιώργος</option></select></label>
@@ -94,6 +94,6 @@
   </div>
 </main>
 <div id="bottomBar" class="bottom hidden"><div><button id="saveBtn">💾 Αποθήκευση</button><button id="shareBtn" class="light">📤 Κοινοποίηση</button><button id="printBtn" class="light">🖨️ PDF / Εκτύπωση</button></div></div>
-<script type="module" src="app.js?v=20260729-no-voice"></script>
+<script type="module" src="app.js?v=20260729-auto-number"></script>
 </body>
 </html>

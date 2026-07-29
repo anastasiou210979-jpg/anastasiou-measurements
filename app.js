@@ -1,7 +1,7 @@
 import { firebaseConfig } from "./firebase-config.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, enableIndexedDbPersistence, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, enableIndexedDbPersistence, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const KEY = "ANASTASIOU_MEASUREMENTS_V53";
 const PHOTO_KEY = `${KEY}_PHOTOS`;
@@ -129,6 +129,38 @@ function clearForm() {
   renderHistory([]);
   location.hash = "#project";
 }
+function highestExistingProjectNumber() {
+  return projects.reduce((highest, project) => {
+    const groups = String(project.projectNo || "").match(/\d+/g);
+    const number = groups?.length ? Number(groups.at(-1)) : 0;
+    return Number.isFinite(number) ? Math.max(highest, number) : highest;
+  }, 0);
+}
+async function assignNextProjectNumber() {
+  if (!currentUser || offlineMode || !navigator.onLine) {
+    alert("Για ασφαλή αυτόματη αρίθμηση συνδέσου στο Internet και στον λογαριασμό σου.");
+    return false;
+  }
+  const counterRef = doc(db, "projects", "_counter");
+  const localMaximum = highestExistingProjectNumber();
+  try {
+    setSync("⏳ Νέος αριθμός έργου…");
+    const next = await runTransaction(db, async transaction => {
+      const snapshot = await transaction.get(counterRef);
+      const stored = Number(snapshot.data()?.value || 0);
+      const value = Math.max(stored, localMaximum) + 1;
+      transaction.set(counterRef, {value, updatedAt:serverTimestamp()});
+      return value;
+    });
+    $("#projectNo").value = String(next).padStart(4, "0");
+    setSync("☁️ Συγχρονίστηκε", "ok");
+    return true;
+  } catch {
+    setSync("⚠️ Δεν δόθηκε αριθμός", "bad");
+    alert("Δεν μπόρεσε να δημιουργηθεί νέος αριθμός έργου. Έλεγξε τη σύνδεση και δοκίμασε ξανά.");
+    return false;
+  }
+}
 function fillForm(project) {
   clearForm();
   fieldIds.forEach(id => $(`#${id}`).value = project[id] || "");
@@ -249,7 +281,9 @@ function renderAll() {
 function subscribeToProjects() {
   unsubscribe?.();
   unsubscribe = onSnapshot(collection(db, "projects"), snapshot => {
-    const cloud = snapshot.docs.map(document => migrateProject({id:document.id, ...document.data()}));
+    const cloud = snapshot.docs
+      .filter(document => document.id !== "_counter")
+      .map(document => migrateProject({id:document.id, ...document.data()}));
     const local = readLocal();
     const merged = new Map(local.map(project => [project.id, project]));
     cloud.forEach(project => merged.set(project.id, project));
@@ -374,7 +408,10 @@ $("#loginBtn").onclick = async () => {
 };
 $("#offlineBtn").onclick = () => { offlineMode=true; setSync("📴 Τοπική λειτουργία"); showApp(); };
 $("#logoutBtn").onclick = () => signOut(auth);
-$("#newBtn").onclick = clearForm;
+$("#newBtn").onclick = async () => {
+  clearForm();
+  await assignNextProjectNumber();
+};
 $$("[data-go]").forEach(button => button.onclick = () => { location.hash = `#${button.dataset.go}`; });
 $$(".stat").forEach(card => card.onclick = () => { $("#stageFilter").value=card.dataset.stage; renderProjects(); location.hash="#projectListCard"; });
 $("#addRow").onclick = () => addRows(1);
