@@ -83,7 +83,15 @@
     <details><summary>📐 Ειδικές κατασκευές</summary><div class="inside"><label>Ελεύθερη περιγραφή<textarea id="special" class="big"></textarea></label></div></details>
     <details><summary>📷 Φωτογραφίες έργου</summary><div class="inside"><p class="note">Οι φωτογραφίες αποθηκεύονται μαζί με το έργο στη συγκεκριμένη συσκευή. Για κοινές φωτογραφίες σε όλες τις συσκευές απαιτείται ενεργοποίηση Firebase Storage.</p><input id="photoInput" type="file" accept="image/*" multiple><div class="tools no-print"><button id="clearPhotosBtn" class="danger">Διαγραφή όλων</button></div><div id="photos" class="photos"></div></div></details>
     <details><summary>🧰 Υλικά έργου</summary><div class="inside grid3">
-      <label>Προφίλ / Εταιρεία<input data-extra="materialProfile"></label><label>Σύστημα<input data-extra="materialSystem"></label><label>Χρώμα<input data-extra="materialColor"></label><label>Τζάμι<input data-extra="materialGlass"></label><label>Σίτες<input data-extra="materialScreens"></label><label>Ρολά / Παντζούρια<input data-extra="materialRollers"></label><label>Μηχανισμοί<input data-extra="materialHardware"></label><label>Λοιπά υλικά<textarea data-extra="materialOther"></textarea></label>
+      <label>1. Τζαμιλίκια – Χρώμα<input data-extra="glassFramesColor"></label>
+      <label>2. Εξώφυλλα – Χρώμα<input data-extra="shuttersColor"></label>
+      <label>3. Πόρτες – Χρώμα<input data-extra="doorsColor"></label>
+      <label>3. Πόρτες – Σχέδιο<input data-extra="doorsDesign"></label>
+      <label>4. Τζάμια<input data-extra="glassType"></label>
+      <label>5. Τύπος σίτας<input data-extra="screenType"></label>
+      <label>6. Ρολά – Χρώμα<input data-extra="rollersColor"></label>
+      <label>6. Ρολά – Τύπος<input data-extra="rollersType"></label>
+      <label>7. Ρολοκουρτίνες<input data-extra="rollerBlinds"></label>
     </div></details>
 
     <div id="lists">
@@ -95,7 +103,7 @@
 </main>
 <div id="bottomBar" class="bottom hidden"><div><button id="saveBtn">💾 Αποθήκευση</button><button id="shareBtn" class="light">📄 Αποστολή PDF στο κατάστημα</button><button id="printBtn" class="light">🖨️ PDF / Εκτύπωση</button></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="pdf-report.js?v=20260729-canvas-pdf-1"></script>
-<script type="module" src="app.js?v=20260729-numbering-fix-1"></script>
+<script src="pdf-report.js?v=20260731-materials-1"></script>
+<script type="module" src="app.js?v=20260731-materials-1"></script>
 </body>
 </html>

@@ -176,7 +176,17 @@
     page = details(pages,page,"Κάγκελα",[["Τύπος",e.railType],["Συνολικό μήκος",e.railLength],["Ύψος",e.railHeight],["Υλικό",e.railMaterial],["Χρώμα",e.railColor],["Τζάμι",e.railGlass],["Σχέδιο",e.railDesign],["Παρατηρήσεις",e.railNotes]],heading);
     page = details(pages,page,"Μεσόπορτες",[["Ποσότητα",e.doorQuantity],["Ύψος",e.doorHeight],["Φάρδος",e.doorWidth],["Διαστάσεις",e.doorDimensions],["Λάμπας",e.doorLampas],["Τύπος / Μοντέλο",e.doorType],["Χρώμα",e.doorColor],["Φορά ανοίγματος",e.doorDirection],["Κάσα",e.doorFrame],["Παρατηρήσεις",e.doorNotes]],heading);
     page = longText(pages,page,"Ειδικές κατασκευές",project.special,heading);
-    page = details(pages,page,"Υλικά έργου",[["Προφίλ / Εταιρεία",e.materialProfile],["Σύστημα",e.materialSystem],["Χρώμα",e.materialColor],["Τζάμι",e.materialGlass],["Σίτες",e.materialScreens],["Ρολά / Παντζούρια",e.materialRollers],["Μηχανισμοί",e.materialHardware],["Λοιπά υλικά",e.materialOther]],heading);
+    page = details(pages,page,"Υλικά έργου",[
+      ["1. Τζαμιλίκια – Χρώμα",e.glassFramesColor],
+      ["2. Εξώφυλλα – Χρώμα",e.shuttersColor],
+      ["3. Πόρτες – Χρώμα",e.doorsColor],
+      ["3. Πόρτες – Σχέδιο",e.doorsDesign],
+      ["4. Τζάμια",e.glassType],
+      ["5. Τύπος σίτας",e.screenType],
+      ["6. Ρολά – Χρώμα",e.rollersColor],
+      ["6. Ρολά – Τύπος",e.rollersType],
+      ["7. Ρολοκουρτίνες",e.rollerBlinds]
+    ],heading);
     page = longText(pages,page,"Γενικές παρατηρήσεις",project.generalNotes,heading);
     await photoPages(pages,page,photos,heading);
     pages.forEach((item,index) => {

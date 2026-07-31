@@ -45,6 +45,10 @@ function migrateProject(raw) {
   project.assignee = project.assignee || (project.stage === "final" ? "Γιώργος" : "Κώστας");
   project.windows = Array.isArray(project.windows) ? project.windows : Array.isArray(project.rows) ? project.rows : [];
   project.extra = project.extra || {};
+  project.extra.glassFramesColor ||= project.extra.materialColor || "";
+  project.extra.glassType ||= project.extra.materialGlass || "";
+  project.extra.screenType ||= project.extra.materialScreens || "";
+  project.extra.rollersType ||= project.extra.materialRollers || "";
   project.special = project.special ?? project.specialConstruction ?? "";
   project.generalNotes = project.generalNotes ?? project.notes ?? "";
   project.history = Array.isArray(project.history) ? project.history : [];
@@ -107,10 +111,10 @@ function collectProject() {
     row.querySelectorAll("[data-k]").forEach(input => item[input.dataset.k] = input.value);
     return item;
   });
-  project.extra = {};
+  const old = projects.find(item => item.id === project.id);
+  project.extra = {...(old?.extra || {})};
   $$("[data-extra]").forEach(input => project.extra[input.dataset.extra] = input.value);
   project.special = $("#special").value;
-  const old = projects.find(item => item.id === project.id);
   project.history = old?.history ? [...old.history] : [];
   return project;
 }

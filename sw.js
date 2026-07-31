@@ -1,5 +1,5 @@
-const CACHE = "anastasiou-v5-3-numbering-fix-1-20260729";
-const ASSETS = ["./", "./index.html", "./app.js?v=20260729-numbering-fix-1", "./pdf-report.js?v=20260729-canvas-pdf-1", "./firebase-config.js", "./manifest.webmanifest", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
+const CACHE = "anastasiou-v5-3-materials-1-20260731";
+const ASSETS = ["./", "./index.html", "./app.js?v=20260731-materials-1", "./pdf-report.js?v=20260731-materials-1", "./firebase-config.js", "./manifest.webmanifest", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
 self.addEventListener("install", event => event.waitUntil(
   caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())
 ));
