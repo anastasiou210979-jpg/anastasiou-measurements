@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="el">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b3a78">
+  <title>ANASTASIOU Μισθολόγιο</title>
+  <style>
+    :root{--blue:#0b3a78;--blue2:#1768b4;--bg:#f3f6fa;--line:#d8e1ec;--ok:#15734c;--bad:#b42318;--warn:#a15c00}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);font:15px system-ui,-apple-system,"Segoe UI",sans-serif;color:#172033}
+    header{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;padding:16px;box-shadow:0 2px 10px #0002}
+    header>div,main{max-width:1100px;margin:auto}h1{font-size:21px;margin:0}.sub{font-size:12px;opacity:.9;margin-top:3px}
+    main{padding:14px 10px 90px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:14px;margin-bottom:12px;box-shadow:0 2px 9px #0b3a7808}
+    h2{font-size:18px;margin:0 0 12px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+    .stat{padding:14px;border:1px solid var(--line);border-radius:13px;background:#f8fbff;text-align:center}.stat strong{display:block;font-size:25px;color:var(--blue)}.stat span{font-size:12px;color:#667085}
+    label{display:grid;gap:5px;font-size:13px;font-weight:750;color:#344054}input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff;font:inherit;color:#172033}
+    button{border:0;border-radius:10px;padding:10px 12px;background:var(--blue);color:#fff;font-weight:800;cursor:pointer}.light{background:#eaf1f8;color:var(--blue)}.success{background:var(--ok)}.danger{background:#feecea;color:var(--bad)}
+    .tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:11px}table{border-collapse:collapse;width:100%;min-width:980px}th,td{padding:7px;border-bottom:1px solid var(--line);text-align:left}th{font-size:12px;background:#edf3f8}td input{padding:7px}.money{text-align:right}.paid{color:var(--ok);font-weight:800}.due{color:var(--bad);font-weight:800}
+    .note{background:#eef6ff;border-left:4px solid var(--blue);padding:10px;border-radius:9px;font-size:13px}.hidden{display:none!important}.history-item{display:flex;justify-content:space-between;gap:10px;padding:10px;border-bottom:1px solid var(--line)}
+    @media(max-width:750px){.grid,.stats{grid-template-columns:1fr 1fr}.stat strong{font-size:21px}}
+    @media(max-width:480px){.grid,.stats{grid-template-columns:1fr}}
+    @media print{header,.no-print{display:none!important}body{background:#fff}.card{box-shadow:none;border:0}main{padding:0}}
+  </style>
+</head>
+<body>
+<header><div><h1>ANASTASIOU Μισθολόγιο</h1><div class="sub">Απλή εσωτερική παρακολούθηση εβδομαδιαίων πληρωμών</div></div></header>
+<main>
+  <section id="loginCard" class="card">
+    <h2>Σύνδεση</h2><p class="note">Συνδέσου με τον ίδιο λογαριασμό που χρησιμοποιείς στις Μετρήσεις.</p>
+    <div class="grid"><label>Email<input id="loginEmail" type="email"></label><label>Κωδικός<input id="loginPassword" type="password"></label></div>
+    <div class="tools"><button id="loginBtn">Σύνδεση</button><button id="offlineBtn" class="light">Χρήση χωρίς σύνδεση</button></div><div id="loginMessage"></div>
+  </section>
+  <div id="payrollApp" class="hidden">
+  <section class="card no-print">
+    <h2>Εβδομάδα</h2>
+    <div class="grid">
+      <label>Έναρξη εβδομάδας<input id="weekStart" type="date"></label>
+      <label>Λήξη εβδομάδας<input id="weekEnd" type="date" readonly></label>
+      <label>Αναζήτηση παλιάς εβδομάδας<select id="weekSelect"><option value="">Τρέχουσα / νέα εβδομάδα</option></select></label>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Σύνοψη εβδομάδας</h2>
+    <div class="stats">
+      <div class="stat"><strong id="totalDue">0,00 €</strong><span>Σύνολο που οφείλεται</span></div>
+      <div class="stat"><strong id="totalPaid">0,00 €</strong><span>Πληρώθηκαν</span></div>
+      <div class="stat"><strong id="totalBalance">0,00 €</strong><span>Υπόλοιπο</span></div>
+      <div class="stat"><strong id="paidPeople">0 / 6</strong><span>Εργαζόμενοι πληρωμένοι</span></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Εργαζόμενοι και πληρωμές</h2>
+    <p class="note">Συμπλήρωσε μία φορά το όνομα και το σταθερό εβδομαδιαίο ποσό. Κάθε εβδομάδα καταγράφεις προκαταβολές, πρόσθετα ποσά, κρατήσεις και τι πληρώθηκε.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Εργαζόμενος</th><th>Σταθερό ποσό</th><th>Πρόσθετα</th><th>Κρατήσεις</th><th>Προκαταβολές</th><th>Πληρωτέο</th><th>Πληρώθηκε</th><th>Υπόλοιπο</th><th>Κατάσταση</th></tr></thead>
+      <tbody id="workers"></tbody>
+    </table></div>
+    <label style="margin-top:10px">Παρατηρήσεις εβδομάδας<textarea id="notes" rows="3"></textarea></label>
+    <div class="tools no-print"><button id="saveBtn">💾 Αποθήκευση εβδομάδας</button><button id="newWeekBtn" class="light">＋ Νέα εβδομάδα</button><button id="printBtn" class="light">🖨️ Εκτύπωση / PDF</button><button id="exportBtn" class="light">⬇️ Backup</button><button id="importBtn" class="light">⬆️ Επαναφορά</button><input id="importFile" type="file" accept="application/json" hidden></div>
+  </section>
+
+  <section class="card"><h2>Ιστορικό</h2><div id="history"></div></section>
+  </div>
+</main>
+<script>
+const KEY='anastasiou_weekly_payroll_v1';
+const euro=n=>new Intl.NumberFormat('el-GR',{style:'currency',currency:'EUR'}).format(Number(n)||0);
+const num=v=>Number(String(v||0).replace(',','.'))||0;
+let state=JSON.parse(localStorage.getItem(KEY)||'{"workers":[],"weeks":{}}');
+while(state.workers.length<6) state.workers.push({id:crypto.randomUUID(),name:'',weekly:0});
+state.workers=state.workers.slice(0,6);
+let activeKey='';
+
+function mondayOfToday(){const d=new Date(),day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d.toISOString().slice(0,10)}
+function endOfWeek(start){if(!start)return'';const d=new Date(start+'T12:00:00');d.setDate(d.getDate()+6);return d.toISOString().slice(0,10)}
+function emptyRows(){return state.workers.map(w=>({id:w.id,extra:0,deduction:0,advance:0,paid:0}))}
+function currentWeek(){return state.weeks[activeKey]||{start:activeKey,end:endOfWeek(activeKey),rows:emptyRows(),notes:''}}
+function saveState(){localStorage.setItem(KEY,JSON.stringify(state))}
+
+function render(){
+  const week=currentWeek();
+  document.querySelector('#weekStart').value=activeKey;
+  document.querySelector('#weekEnd').value=endOfWeek(activeKey);
+  document.querySelector('#notes').value=week.notes||'';
+  document.querySelector('#workers').innerHTML=state.workers.map((w,i)=>{
+    const r=week.rows.find(x=>x.id===w.id)||{id:w.id,extra:0,deduction:0,advance:0,paid:0};
+    const due=Math.max(0,num(w.weekly)+num(r.extra)-num(r.deduction)-num(r.advance));
+    const balance=Math.max(0,due-num(r.paid));
+    return `<tr data-i="${i}"><td><input class="name" value="${esc(w.name)}" placeholder="Εργαζόμενος ${i+1}"></td><td><input class="weekly money" type="number" step="0.01" value="${num(w.weekly)}"></td><td><input class="extra money" type="number" step="0.01" value="${num(r.extra)}"></td><td><input class="deduction money" type="number" step="0.01" value="${num(r.deduction)}"></td><td><input class="advance money" type="number" step="0.01" value="${num(r.advance)}"></td><td class="money dueValue">${euro(due)}</td><td><input class="paidValue money" type="number" step="0.01" value="${num(r.paid)}"></td><td class="money balanceValue ${balance?'due':'paid'}">${euro(balance)}</td><td class="statusValue ${balance?'due':'paid'}">${balance?'Εκκρεμεί':'Πληρώθηκε'}</td></tr>`
+  }).join('');
+  document.querySelectorAll('#workers input').forEach(x=>x.addEventListener('input',recalculate));
+  recalculate();renderWeekSelect();renderHistory();
+}
+function esc(v){return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function readForm(){
+  const rows=[];
+  document.querySelectorAll('#workers tr').forEach((tr,i)=>{
+    state.workers[i].name=tr.querySelector('.name').value.trim();
+    state.workers[i].weekly=num(tr.querySelector('.weekly').value);
+    rows.push({id:state.workers[i].id,extra:num(tr.querySelector('.extra').value),deduction:num(tr.querySelector('.deduction').value),advance:num(tr.querySelector('.advance').value),paid:num(tr.querySelector('.paidValue').value)});
+  });
+  return {start:activeKey,end:endOfWeek(activeKey),rows,notes:document.querySelector('#notes').value.trim(),updatedAt:new Date().toISOString()};
+}
+function recalculate(){
+  let dueTotal=0,paidTotal=0,balanceTotal=0,paidCount=0;
+  document.querySelectorAll('#workers tr').forEach(tr=>{
+    const due=Math.max(0,num(tr.querySelector('.weekly').value)+num(tr.querySelector('.extra').value)-num(tr.querySelector('.deduction').value)-num(tr.querySelector('.advance').value));
+    const paid=num(tr.querySelector('.paidValue').value),balance=Math.max(0,due-paid);
+    tr.querySelector('.dueValue').textContent=euro(due);tr.querySelector('.balanceValue').textContent=euro(balance);tr.querySelector('.statusValue').textContent=balance?'Εκκρεμεί':'Πληρώθηκε';
+    tr.querySelector('.balanceValue').className='money balanceValue '+(balance?'due':'paid');tr.querySelector('.statusValue').className='statusValue '+(balance?'due':'paid');
+    dueTotal+=due;paidTotal+=paid;balanceTotal+=balance;if(due>0&&balance===0)paidCount++;
+  });
+  document.querySelector('#totalDue').textContent=euro(dueTotal);document.querySelector('#totalPaid').textContent=euro(paidTotal);document.querySelector('#totalBalance').textContent=euro(balanceTotal);document.querySelector('#paidPeople').textContent=`${paidCount} / 6`;
+}
+function renderWeekSelect(){
+  const s=document.querySelector('#weekSelect'),keys=Object.keys(state.weeks).sort().reverse();
+  s.innerHTML='<option value="">Τρέχουσα / νέα εβδομάδα</option>'+keys.map(k=>`<option value="${k}" ${k===activeKey?'selected':''}>${k} έως ${endOfWeek(k)}</option>`).join('');
+}
+function renderHistory(){
+  const box=document.querySelector('#history'),keys=Object.keys(state.weeks).sort().reverse();
+  box.innerHTML=keys.length?keys.map(k=>{const w=state.weeks[k];let due=0,paid=0;w.rows.forEach(r=>{const emp=state.workers.find(x=>x.id===r.id)||{weekly:0};due+=Math.max(0,num(emp.weekly)+num(r.extra)-num(r.deduction)-num(r.advance));paid+=num(r.paid)});return `<div class="history-item"><div><strong>${k} – ${endOfWeek(k)}</strong><div>Πληρώθηκαν: ${euro(paid)} • Υπόλοιπο: ${euro(Math.max(0,due-paid))}</div></div><button class="light openWeek" data-week="${k}">Άνοιγμα</button></div>`}).join(''):'<p>Δεν υπάρχουν ακόμη αποθηκευμένες εβδομάδες.</p>';
+  document.querySelectorAll('.openWeek').forEach(b=>b.onclick=()=>{activeKey=b.dataset.week;render();scrollTo({top:0,behavior:'smooth'})});
+}
+document.querySelector('#saveBtn').onclick=async()=>{state.weeks[activeKey]=readForm();saveState();if(window.payrollCloudSave)await window.payrollCloudSave(activeKey,state.weeks[activeKey]);render();alert('Η εβδομάδα αποθηκεύτηκε.')};
+document.querySelector('#newWeekBtn').onclick=()=>{activeKey=mondayOfToday();if(state.weeks[activeKey]&&!confirm('Υπάρχει ήδη καταχώριση για αυτή την εβδομάδα. Να την ανοίξω;'))return;render()};
+document.querySelector('#weekStart').onchange=e=>{activeKey=e.target.value||mondayOfToday();render()};
+document.querySelector('#weekSelect').onchange=e=>{if(e.target.value){activeKey=e.target.value;render()}};
+document.querySelector('#printBtn').onclick=()=>print();
+document.querySelector('#exportBtn').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'}));a.download=`ANASTASIOU_Mισθοί_backup_${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(a.href)};
+document.querySelector('#importBtn').onclick=()=>document.querySelector('#importFile').click();
+document.querySelector('#importFile').onchange=async e=>{try{const data=JSON.parse(await e.target.files[0].text());if(!data.workers||!data.weeks)throw 0;state=data;saveState();activeKey=mondayOfToday();render();alert('Το backup επαναφέρθηκε.')}catch{alert('Το αρχείο backup δεν είναι σωστό.')}e.target.value=''};
+window.receivePayrollCloud=cloud=>{state.weeks={...state.weeks,...cloud};saveState();render()};
+window.showPayrollApp=()=>{document.querySelector('#loginCard').classList.add('hidden');document.querySelector('#payrollApp').classList.remove('hidden');activeKey=mondayOfToday();render()};
+</script>
+<script type="module">
+import {firebaseConfig} from "../firebase-config.js";
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {getAuth,signInWithEmailAndPassword,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {getFirestore,collection,doc,setDoc,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+try{
+  const firebaseApp=initializeApp(firebaseConfig),auth=getAuth(firebaseApp),db=getFirestore(firebaseApp);
+  document.querySelector('#loginBtn').onclick=async()=>{try{document.querySelector('#loginMessage').textContent='Σύνδεση…';await signInWithEmailAndPassword(auth,document.querySelector('#loginEmail').value.trim(),document.querySelector('#loginPassword').value);document.querySelector('#loginMessage').textContent=''}catch{document.querySelector('#loginMessage').textContent='Λάθος email ή κωδικός.'}};
+  document.querySelector('#offlineBtn').onclick=()=>window.showPayrollApp();
+  onAuthStateChanged(auth,user=>{if(!user)return;window.showPayrollApp();onSnapshot(collection(db,'projects'),snapshot=>{const cloud={};snapshot.docs.filter(item=>item.id.startsWith('_misthologio_')).forEach(item=>{const data=item.data();if(data.start)cloud[data.start]=data});window.receivePayrollCloud(cloud)});window.payrollCloudSave=(key,week)=>setDoc(doc(db,'projects',`_misthologio_${key}`),{...week,type:'misthologio',serverUpdatedAt:serverTimestamp()},{merge:true})});
+}catch{document.querySelector('#loginMessage').textContent='Δεν φορτώθηκε η σύνδεση. Μπορείς να χρησιμοποιήσεις την τοπική λειτουργία.';document.querySelector('#offlineBtn').onclick=()=>window.showPayrollApp()}
+</script>
+</body>
+</html>
