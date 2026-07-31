@@ -5,6 +5,7 @@ import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, enableInd
 
 const KEY = "ANASTASIOU_MEASUREMENTS_V53";
 const PHOTO_KEY = `${KEY}_PHOTOS`;
+const PAYROLL_KEY = `${KEY}_PAYROLL`;
 const LEGACY_KEYS = [
   "ANASTASIOU_MEASUREMENTS_V52", "ANASTASIOU_MEASUREMENTS_V51",
   "ANASTASIOU_OFFLINE_V4", "ANASTASIOU_PROJECTS", "anastasiou_projects"
@@ -12,7 +13,7 @@ const LEGACY_KEYS = [
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 const fieldIds = ["id","projectNo","date","stage","assignee","customer","phone","customerEmail","address","afm","doy","measurer","gps","generalNotes"];
-let auth, db, currentUser = null, offlineMode = false, projects = [], photos = [], pendingItems = [], unsubscribe = null, saveTimer = null;
+let auth, db, currentUser = null, offlineMode = false, projects = [], photos = [], pendingItems = [], payrollWeeks = {}, activePayWeek = "", unsubscribe = null, saveTimer = null;
 
 const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
 const createId = () => crypto.randomUUID?.() || `${Date.now().toString(36)}${Math.random().toString(36).slice(2)}`;
@@ -360,6 +361,88 @@ function renderPendingOverview() {
     });
   if (!openItems.length) overview.innerHTML = '<div class="note">Δεν υπάρχουν ανοιχτές εκκρεμότητες.</div>';
 }
+
+const payrollEuro = value => new Intl.NumberFormat("el-GR", {style:"currency", currency:"EUR"}).format(Number(value) || 0);
+const payrollNumber = value => Number(String(value ?? 0).replace(",", ".")) || 0;
+function mondayOf(date = new Date()) {
+  const value = new Date(date);
+  const day = (value.getDay() + 6) % 7;
+  value.setDate(value.getDate() - day);
+  return value.toISOString().slice(0, 10);
+}
+function payrollWeekEnd(start) {
+  if (!start) return "";
+  const value = new Date(`${start}T12:00:00`);
+  value.setDate(value.getDate() + 6);
+  return value.toISOString().slice(0, 10);
+}
+function readLocalPayroll() {
+  try { return JSON.parse(localStorage.getItem(PAYROLL_KEY) || "{}"); } catch { return {}; }
+}
+function writeLocalPayroll() {
+  localStorage.setItem(PAYROLL_KEY, JSON.stringify(payrollWeeks));
+}
+function payrollTemplate() {
+  const latestKey = Object.keys(payrollWeeks).sort().reverse()[0];
+  const previous = latestKey ? payrollWeeks[latestKey]?.workers || [] : [];
+  return Array.from({length:6}, (_, index) => ({
+    name: previous[index]?.name || "",
+    weekly: payrollNumber(previous[index]?.weekly),
+    extra: 0, deduction: 0, advance: 0, paid: 0
+  }));
+}
+function currentPayrollWeek() {
+  return payrollWeeks[activePayWeek] || {start:activePayWeek, end:payrollWeekEnd(activePayWeek), workers:payrollTemplate(), notes:""};
+}
+function renderPayroll() {
+  if (!activePayWeek) activePayWeek = mondayOf();
+  const week = currentPayrollWeek();
+  $("#payWeekStart").value = activePayWeek;
+  $("#payWeekEnd").value = payrollWeekEnd(activePayWeek);
+  $("#payNotes").value = week.notes || "";
+  $("#payWorkers").innerHTML = Array.from({length:6}, (_, index) => {
+    const worker = week.workers?.[index] || payrollTemplate()[index];
+    return `<tr><td><input data-pay="name" value="${escapeHtml(worker.name)}" placeholder="Εργαζόμενος ${index + 1}"></td><td><input data-pay="weekly" type="number" step="0.01" value="${payrollNumber(worker.weekly)}"></td><td><input data-pay="extra" type="number" step="0.01" value="${payrollNumber(worker.extra)}"></td><td><input data-pay="deduction" type="number" step="0.01" value="${payrollNumber(worker.deduction)}"></td><td><input data-pay="advance" type="number" step="0.01" value="${payrollNumber(worker.advance)}"></td><td data-pay-view="due"></td><td><input data-pay="paid" type="number" step="0.01" value="${payrollNumber(worker.paid)}"></td><td data-pay-view="balance"></td><td data-pay-view="status"></td></tr>`;
+  }).join("");
+  $$("#payWorkers input").forEach(input => input.addEventListener("input", recalculatePayroll));
+  const keys = Object.keys(payrollWeeks).sort().reverse();
+  $("#payWeekSelect").innerHTML = '<option value="">Τρέχουσα εβδομάδα</option>' + keys.map(key => `<option value="${key}" ${key === activePayWeek ? "selected" : ""}>${key} έως ${payrollWeekEnd(key)}</option>`).join("");
+  recalculatePayroll();
+}
+function collectPayrollWeek() {
+  const workers = $$("#payWorkers tr").map(row => {
+    const value = key => row.querySelector(`[data-pay="${key}"]`).value;
+    return {name:value("name").trim(), weekly:payrollNumber(value("weekly")), extra:payrollNumber(value("extra")), deduction:payrollNumber(value("deduction")), advance:payrollNumber(value("advance")), paid:payrollNumber(value("paid"))};
+  });
+  return {type:"payroll", start:activePayWeek, end:payrollWeekEnd(activePayWeek), workers, notes:$("#payNotes").value.trim(), updatedAt:new Date().toISOString(), updatedBy:currentUser?.email || "offline"};
+}
+function recalculatePayroll() {
+  let totalDue = 0, totalPaid = 0, totalBalance = 0;
+  $$("#payWorkers tr").forEach(row => {
+    const value = key => payrollNumber(row.querySelector(`[data-pay="${key}"]`).value);
+    const due = Math.max(0, value("weekly") + value("extra") - value("deduction") - value("advance"));
+    const paid = value("paid");
+    const balance = Math.max(0, due - paid);
+    row.querySelector('[data-pay-view="due"]').textContent = payrollEuro(due);
+    row.querySelector('[data-pay-view="balance"]').textContent = payrollEuro(balance);
+    row.querySelector('[data-pay-view="status"]').textContent = balance ? "Εκκρεμεί" : "Πληρώθηκε";
+    totalDue += due; totalPaid += paid; totalBalance += balance;
+  });
+  $("#payTotalDue").textContent = payrollEuro(totalDue);
+  $("#payTotalPaid").textContent = payrollEuro(totalPaid);
+  $("#payTotalBalance").textContent = payrollEuro(totalBalance);
+}
+async function savePayrollWeek() {
+  const week = collectPayrollWeek();
+  payrollWeeks[activePayWeek] = week;
+  writeLocalPayroll();
+  $("#payStatus").textContent = "Η εβδομάδα αποθηκεύτηκε τοπικά.";
+  if (currentUser && !offlineMode) {
+    await setDoc(doc(db, "projects", `_payroll_${activePayWeek}`), {...week, serverUpdatedAt:serverTimestamp()}, {merge:true});
+    $("#payStatus").textContent = "Η εβδομάδα αποθηκεύτηκε και συγχρονίστηκε.";
+  }
+  renderPayroll();
+}
 function renderAll() {
   renderProjects();
   renderCustomers();
@@ -367,10 +450,18 @@ function renderAll() {
   $("#finalCount").textContent = projects.filter(project => normalizeStage(project.stage) === "final").length;
   $("#doneCount").textContent = projects.filter(project => normalizeStage(project.stage) === "done").length;
   renderPendingOverview();
+  renderPayroll();
 }
 function subscribeToProjects() {
   unsubscribe?.();
   unsubscribe = onSnapshot(collection(db, "projects"), snapshot => {
+    const cloudPayroll = {};
+    snapshot.docs.filter(document => document.id.startsWith("_payroll_")).forEach(document => {
+      const week = document.data();
+      if (week.start) cloudPayroll[week.start] = week;
+    });
+    payrollWeeks = {...readLocalPayroll(), ...cloudPayroll};
+    writeLocalPayroll();
     const cloud = snapshot.docs
       .filter(document => !document.id.startsWith("_counter"))
       .map(document => migrateProject({id:document.id, ...document.data()}));
@@ -391,12 +482,16 @@ async function uploadUnsyncedLocal() {
   for (const project of readLocal()) {
     await setDoc(doc(db, "projects", project.id), {...project, serverUpdatedAt:serverTimestamp()}, {merge:true});
   }
+  for (const [weekKey, week] of Object.entries(readLocalPayroll())) {
+    await setDoc(doc(db, "projects", `_payroll_${weekKey}`), {...week, type:"payroll", serverUpdatedAt:serverTimestamp()}, {merge:true});
+  }
 }
 function showApp() {
   $("#login").classList.add("hidden");
   $("#app").classList.remove("hidden");
   $("#bottomBar").classList.remove("hidden");
   projects = readLocal();
+  payrollWeeks = readLocalPayroll();
   renderAll();
   if (!$("#windows").children.length) clearForm();
 }
@@ -597,6 +692,11 @@ $("#newBtn").onclick = async () => {
 $$("[data-go]").forEach(button => button.onclick = () => { location.hash = `#${button.dataset.go}`; });
 $$(".stat[data-stage]").forEach(card => card.onclick = () => { $("#stageFilter").value=card.dataset.stage; renderProjects(); location.hash="#projectListCard"; });
 $("#pendingCount").closest(".stat").onclick = () => { location.hash="#pendingOverview"; };
+$("#paySaveBtn").onclick = () => savePayrollWeek().catch(() => { $("#payStatus").textContent = "Δεν ολοκληρώθηκε ο συγχρονισμός. Η καταχώριση κρατήθηκε στη συσκευή."; });
+$("#payNewWeekBtn").onclick = () => { activePayWeek = mondayOf(); renderPayroll(); };
+$("#payWeekStart").onchange = event => { activePayWeek = event.target.value || mondayOf(); renderPayroll(); };
+$("#payWeekSelect").onchange = event => { if (event.target.value) { activePayWeek = event.target.value; renderPayroll(); } };
+$("#payPrintBtn").onclick = () => { document.body.classList.add("print-payroll"); window.print(); setTimeout(() => document.body.classList.remove("print-payroll"), 500); };
 $("#addRow").onclick = () => addRows(1);
 $("#add5").onclick = () => addRows(5);
 $("#clearRows").onclick = () => { if(confirm("Να καθαριστούν όλες οι γραμμές κουφωμάτων;")) { $("#windows").innerHTML=""; addRows(20); } };
@@ -683,7 +783,8 @@ $("#importFile").onchange = async event => {
   event.target.value = "";
 };
 
-$("#app").addEventListener("input", () => {
+$("#app").addEventListener("input", event => {
+  if (event.target.closest("#payrollCard")) return;
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
     if ($("#id").value || $("#projectNo").value) saveProject(true);
