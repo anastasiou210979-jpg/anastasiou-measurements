@@ -12,7 +12,7 @@ const LEGACY_KEYS = [
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 const fieldIds = ["id","projectNo","date","stage","assignee","customer","phone","customerEmail","address","afm","doy","measurer","gps","generalNotes"];
-let auth, db, currentUser = null, offlineMode = false, projects = [], photos = [], unsubscribe = null, saveTimer = null;
+let auth, db, currentUser = null, offlineMode = false, projects = [], photos = [], pendingItems = [], unsubscribe = null, saveTimer = null;
 
 const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
 const createId = () => crypto.randomUUID?.() || `${Date.now().toString(36)}${Math.random().toString(36).slice(2)}`;
@@ -52,6 +52,7 @@ function migrateProject(raw) {
   project.special = project.special ?? project.specialConstruction ?? "";
   project.generalNotes = project.generalNotes ?? project.notes ?? "";
   project.history = Array.isArray(project.history) ? project.history : [];
+  project.pending = Array.isArray(project.pending) ? project.pending : [];
   return project;
 }
 function readLocal() {
@@ -115,6 +116,7 @@ function collectProject() {
   project.extra = {...(old?.extra || {})};
   $$("[data-extra]").forEach(input => project.extra[input.dataset.extra] = input.value);
   project.special = $("#special").value;
+  project.pending = pendingItems.map(item => ({...item}));
   project.history = old?.history ? [...old.history] : [];
   return project;
 }
@@ -129,7 +131,9 @@ function clearForm() {
   $("#windows").innerHTML = "";
   addRows(20);
   photos = [];
+  pendingItems = [];
   renderPhotos();
+  renderPendingItems();
   renderHistory([]);
   location.hash = "#project";
 }
@@ -174,10 +178,12 @@ function fillForm(project) {
   $("#stage").value = normalizeStage(project.stage);
   $$("[data-extra]").forEach(input => input.value = project.extra?.[input.dataset.extra] || "");
   $("#special").value = project.special || "";
+  pendingItems = (project.pending || []).map(item => ({...item}));
   $("#windows").innerHTML = "";
   addRows(Math.max(1, project.windows?.length || 0), project.windows || []);
   try { photos = JSON.parse(localStorage.getItem(`${PHOTO_KEY}_${project.id}`) || "[]"); } catch { photos = []; }
   renderPhotos();
+  renderPendingItems();
   renderHistory(project.history || []);
   location.hash = "#project";
 }
@@ -309,12 +315,58 @@ function renderCustomers() {
     });
   if (!box.children.length) box.innerHTML = '<div class="note">Δεν υπάρχουν πελάτες.</div>';
 }
+function renderPendingItems() {
+  const box = $("#pendingList");
+  if (!box) return;
+  box.innerHTML = "";
+  pendingItems.forEach(item => {
+    const row = document.createElement("div");
+    row.className = `pending-row${item.done ? " done" : ""}`;
+    row.innerHTML = `
+      <input class="pending-check" type="checkbox" ${item.done ? "checked" : ""} aria-label="Ολοκληρώθηκε">
+      <div><div class="pending-text title">${escapeHtml(item.text)}</div><div class="muted">Υπεύθυνος: ${escapeHtml(item.owner || "—")}${item.doneAt ? ` • Ολοκληρώθηκε ${escapeHtml(item.doneAt)}` : " • Εκκρεμεί"}</div></div>
+      <button type="button" class="danger pending-remove">Διαγραφή</button>`;
+    row.querySelector(".pending-check").onchange = event => {
+      item.done = event.target.checked;
+      item.doneAt = item.done ? new Date().toLocaleString("el-GR") : "";
+      renderPendingItems();
+      if ($("#id").value || $("#projectNo").value) saveProject(true, item.done ? "Ολοκλήρωση εκκρεμότητας" : "Επαναφορά εκκρεμότητας");
+    };
+    row.querySelector(".pending-remove").onclick = () => {
+      pendingItems = pendingItems.filter(entry => entry.id !== item.id);
+      renderPendingItems();
+      if ($("#id").value || $("#projectNo").value) saveProject(true, "Διαγραφή εκκρεμότητας");
+    };
+    box.appendChild(row);
+  });
+  if (!pendingItems.length) box.innerHTML = '<div class="note">Δεν υπάρχουν εκκρεμότητες σε αυτό το έργο.</div>';
+}
+function renderPendingOverview() {
+  const overview = $("#pendingOverview");
+  if (!overview) return;
+  const openItems = projects.flatMap(project => (project.pending || [])
+    .filter(item => !item.done)
+    .map(item => ({project, item})));
+  $("#pendingCount").textContent = openItems.length;
+  overview.innerHTML = "";
+  openItems
+    .sort((a,b) => (b.item.createdAt || "").localeCompare(a.item.createdAt || ""))
+    .forEach(({project,item}) => {
+      const row = document.createElement("div");
+      row.className = "item pending-project";
+      row.innerHTML = `<div><div class="title">${escapeHtml(project.projectNo || "Χωρίς αριθμό")} — ${escapeHtml(project.customer || "Χωρίς πελάτη")}</div><div>${escapeHtml(item.text)}</div><div class="muted">Υπεύθυνος: ${escapeHtml(item.owner || "—")}</div></div><button class="light">Άνοιγμα έργου</button>`;
+      row.querySelector("button").onclick = () => fillForm(project);
+      overview.appendChild(row);
+    });
+  if (!openItems.length) overview.innerHTML = '<div class="note">Δεν υπάρχουν ανοιχτές εκκρεμότητες.</div>';
+}
 function renderAll() {
   renderProjects();
   renderCustomers();
   $("#offerCount").textContent = projects.filter(project => normalizeStage(project.stage) === "offer").length;
   $("#finalCount").textContent = projects.filter(project => normalizeStage(project.stage) === "final").length;
   $("#doneCount").textContent = projects.filter(project => normalizeStage(project.stage) === "done").length;
+  renderPendingOverview();
 }
 function subscribeToProjects() {
   unsubscribe?.();
@@ -543,7 +595,8 @@ $("#newBtn").onclick = async () => {
   clearForm();
 };
 $$("[data-go]").forEach(button => button.onclick = () => { location.hash = `#${button.dataset.go}`; });
-$$(".stat").forEach(card => card.onclick = () => { $("#stageFilter").value=card.dataset.stage; renderProjects(); location.hash="#projectListCard"; });
+$$(".stat[data-stage]").forEach(card => card.onclick = () => { $("#stageFilter").value=card.dataset.stage; renderProjects(); location.hash="#projectListCard"; });
+$("#pendingCount").closest(".stat").onclick = () => { location.hash="#pendingOverview"; };
 $("#addRow").onclick = () => addRows(1);
 $("#add5").onclick = () => addRows(5);
 $("#clearRows").onclick = () => { if(confirm("Να καθαριστούν όλες οι γραμμές κουφωμάτων;")) { $("#windows").innerHTML=""; addRows(20); } };
@@ -575,6 +628,34 @@ $("#photoInput").onchange = async event => {
   event.target.value = "";
 };
 $("#clearPhotosBtn").onclick = () => { if (!photos.length || confirm("Να διαγραφούν όλες οι φωτογραφίες αυτού του έργου;")) { photos=[]; renderPhotos(); } };
+$("#addPendingBtn").onclick = () => {
+  const value = $("#pendingText").value.trim();
+  if (!value) {
+    alert("Γράψε πρώτα την εκκρεμότητα.");
+    return;
+  }
+  pendingItems.push({
+    id: createId(),
+    text: value,
+    owner: $("#pendingOwner").value,
+    done: false,
+    createdAt: new Date().toISOString(),
+    doneAt: ""
+  });
+  $("#pendingText").value = "";
+  renderPendingItems();
+  if ($("#id").value || $("#projectNo").value) saveProject(true, "Προσθήκη εκκρεμότητας");
+};
+$("#completeProjectBtn").onclick = async () => {
+  const openCount = pendingItems.filter(item => !item.done).length;
+  if (openCount) {
+    alert(`Υπάρχουν ακόμη ${openCount} ανοιχτές εκκρεμότητες. Ολοκλήρωσέ τες πρώτα.`);
+    return;
+  }
+  if (!confirm("Να σημειωθεί το έργο ως ολοκληρωμένο και παραδομένο;")) return;
+  $("#stage").value = "done";
+  await saveProject(false, "Ολοκλήρωση και παράδοση έργου");
+};
 $("#exportBtn").onclick = () => {
   download(`ANASTASIOU_BACKUP_${new Date().toISOString().slice(0,10)}.json`,JSON.stringify({version:"5.3",exportedAt:new Date().toISOString(),projects},null,2));
   $("#backupStatus").textContent = "Το backup δημιουργήθηκε.";

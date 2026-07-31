@@ -24,6 +24,7 @@
     .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{padding:16px;border-radius:14px;background:linear-gradient(145deg,#fbfdff,#e9f2fb);border:1px solid var(--line);text-align:center;cursor:pointer}.stat strong{display:block;color:var(--blue);font-size:30px}.stat span{font-size:13px;color:#475467}
     .nav button{flex:1 1 135px}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{border-collapse:collapse;width:100%;min-width:1080px}th,td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:4px}th{background:#edf3f8;font-size:12px}td input,td select,td textarea{border:0;border-radius:0;padding:7px}td textarea{min-height:44px}
     .list{display:grid;gap:8px}.item{border:1px solid var(--line);border-radius:11px;padding:10px;display:flex;justify-content:space-between;gap:10px;align-items:center}.title{font-weight:850}
+    .pending-row{border:1px solid var(--line);border-radius:11px;padding:9px;display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center}.pending-row.done{background:#eef9f3;color:#667085}.pending-row.done .pending-text{text-decoration:line-through}.pending-project{border-left:5px solid var(--warn)}
     .photos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.photo{position:relative}.photo img{width:100%;height:150px;object-fit:cover;border-radius:10px}.photo button{position:absolute;right:5px;top:5px;padding:6px}
     .bottom{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:8px;z-index:25}.bottom>div{display:flex;flex-wrap:wrap;justify-content:center;gap:7px}
     #login{max-width:540px;margin:30px auto}.badge{display:inline-block;border-radius:999px;background:#edf3f8;color:var(--blue);padding:4px 8px;font-size:12px;font-weight:800}
@@ -50,7 +51,8 @@
       <div class="stat" data-stage="offer"><strong id="offerCount">0</strong><span>Έργα για μέτρηση προσφοράς (Κώστας)</span></div>
       <div class="stat" data-stage="final"><strong id="finalCount">0</strong><span>Έργα για τελική μέτρηση (Γιώργος)</span></div>
       <div class="stat" data-stage="done"><strong id="doneCount">0</strong><span>Ολοκληρωμένες μετρήσεις</span></div>
-    </div></section>
+      <div class="stat pending-project"><strong id="pendingCount">0</strong><span>Ανοιχτές εκκρεμότητες</span></div>
+    </div><h2 style="margin-top:16px">Ανοιχτές εκκρεμότητες όλων των έργων</h2><div id="pendingOverview" class="list"></div></section>
 
     <section id="project" class="card">
       <h2>Στοιχεία έργου</h2><input id="id" type="hidden">
@@ -68,6 +70,12 @@
       <label style="margin-top:9px">Γενικές παρατηρήσεις<textarea id="generalNotes"></textarea></label>
       <div id="historyBox" class="muted" style="margin-top:8px"></div>
     </section>
+
+    <details open><summary>📌 Εκκρεμότητες έργου</summary><div class="inside">
+      <div class="grid"><label>Νέα εκκρεμότητα<input id="pendingText" placeholder="π.χ. Αλλαγή πόμολου, λείπει σίτα"></label><label>Υπεύθυνος<select id="pendingOwner"><option>Γιώργος</option><option>Κώστας</option><option>Κατάστημα</option><option>Συνεργείο</option></select></label></div>
+      <div class="tools no-print"><button id="addPendingBtn">＋ Προσθήκη εκκρεμότητας</button><button id="completeProjectBtn" class="success">✓ Ολοκλήρωση και παράδοση έργου</button></div>
+      <div id="pendingList" class="list" style="margin-top:10px"></div>
+    </div></details>
 
     <details open><summary>🪟 Κουφώματα</summary><div class="inside"><div class="tablewrap"><table><thead><tr><th>Α/Α</th><th>Χώρος</th><th>Ύψος</th><th>Φάρδος</th><th>Λάμπας</th><th>Αρμοκάλυπτο</th><th>Τύπος κουφώματος</th><th>Ρολό</th><th>Σίτα</th><th>Παρατηρήσεις</th><th></th></tr></thead><tbody id="windows"></tbody></table></div><div class="tools no-print"><button id="addRow" class="light">＋ Μία γραμμή</button><button id="add5" class="light">＋ 5 γραμμές</button><button id="clearRows" class="danger">Καθαρισμός</button></div></div></details>
 
@@ -104,7 +112,7 @@
 </main>
 <div id="bottomBar" class="bottom hidden"><div><button id="saveBtn">💾 Αποθήκευση</button><button id="shareBtn" class="light">📄 Αποστολή PDF στο κατάστημα</button><button id="printBtn" class="light">🖨️ PDF / Εκτύπωση</button></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="pdf-report.js?v=20260731-materials-2"></script>
-<script type="module" src="app.js?v=20260731-materials-2"></script>
+<script src="pdf-report.js?v=20260731-pending-1"></script>
+<script type="module" src="app.js?v=20260731-pending-1"></script>
 </body>
 </html>

@@ -176,6 +176,12 @@
     page = details(pages,page,"Κάγκελα",[["Τύπος",e.railType],["Συνολικό μήκος",e.railLength],["Ύψος",e.railHeight],["Υλικό",e.railMaterial],["Χρώμα",e.railColor],["Τζάμι",e.railGlass],["Σχέδιο",e.railDesign],["Παρατηρήσεις",e.railNotes]],heading);
     page = details(pages,page,"Μεσόπορτες",[["Ποσότητα",e.doorQuantity],["Ύψος",e.doorHeight],["Φάρδος",e.doorWidth],["Διαστάσεις",e.doorDimensions],["Λάμπας",e.doorLampas],["Τύπος / Μοντέλο",e.doorType],["Χρώμα",e.doorColor],["Φορά ανοίγματος",e.doorDirection],["Κάσα",e.doorFrame],["Παρατηρήσεις",e.doorNotes]],heading);
     page = longText(pages,page,"Ειδικές κατασκευές",project.special,heading);
+    if ((project.pending || []).length) {
+      page = table(pages,page,"Εκκρεμότητες έργου",
+        ["Κατάσταση","Περιγραφή","Υπεύθυνος"],
+        project.pending.map(item => [item.done ? "Ολοκληρώθηκε" : "Εκκρεμεί",display(item.text),display(item.owner)]),
+        [240,920,PAGE_W-MARGIN*2-1160],heading);
+    }
     page = details(pages,page,"Υλικά έργου",[
       ["1. Τζαμιλίκια – Χρώμα",e.glassFramesColor],
       ["2. Εξώφυλλα – Χρώμα",e.shuttersColor],
