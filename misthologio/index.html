@@ -139,10 +139,10 @@ window.showPayrollApp=()=>{document.querySelector('#loginCard').classList.add('h
 <script type="module">
 import {firebaseConfig} from "../firebase-config.js";
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import {getAuth,signInWithEmailAndPassword,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,setPersistence,browserLocalPersistence} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import {getFirestore,collection,doc,setDoc,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 try{
-  const firebaseApp=initializeApp(firebaseConfig),auth=getAuth(firebaseApp),db=getFirestore(firebaseApp);
+  const firebaseApp=initializeApp(firebaseConfig),auth=getAuth(firebaseApp),db=getFirestore(firebaseApp);await setPersistence(auth,browserLocalPersistence);
   document.querySelector('#loginBtn').onclick=async()=>{try{document.querySelector('#loginMessage').textContent='Σύνδεση…';await signInWithEmailAndPassword(auth,document.querySelector('#loginEmail').value.trim(),document.querySelector('#loginPassword').value);document.querySelector('#loginMessage').textContent=''}catch{document.querySelector('#loginMessage').textContent='Λάθος email ή κωδικός.'}};
   document.querySelector('#offlineBtn').onclick=()=>window.showPayrollApp();
   onAuthStateChanged(auth,user=>{if(!user)return;window.showPayrollApp();onSnapshot(collection(db,'projects'),snapshot=>{const cloud={};snapshot.docs.filter(item=>item.id.startsWith('_misthologio_')).forEach(item=>{const data=item.data();if(data.start)cloud[data.start]=data});window.receivePayrollCloud(cloud)});window.payrollCloudSave=(key,week)=>setDoc(doc(db,'projects',`_misthologio_${key}`),{...week,type:'misthologio',serverUpdatedAt:serverTimestamp()},{merge:true})});
