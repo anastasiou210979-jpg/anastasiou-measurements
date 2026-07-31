@@ -185,7 +185,8 @@
       ["5. Τύπος σίτας",e.screenType],
       ["6. Ρολά – Χρώμα",e.rollersColor],
       ["6. Ρολά – Τύπος",e.rollersType],
-      ["7. Ρολοκουρτίνες",e.rollerBlinds]
+      ["7. Ρολοκουρτίνες",e.rollerBlinds],
+      ["8. Λοιπά υλικά",e.materialOther]
     ],heading);
     page = longText(pages,page,"Γενικές παρατηρήσεις",project.generalNotes,heading);
     await photoPages(pages,page,photos,heading);
