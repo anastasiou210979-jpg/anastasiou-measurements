@@ -1,6 +1,6 @@
 import { firebaseConfig } from "./firebase-config.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, enableIndexedDbPersistence, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const KEY = "ANASTASIOU_MEASUREMENTS_V53";
@@ -564,6 +564,7 @@ function download(name,text) {
 try {
   const firebaseApp = initializeApp(firebaseConfig);
   auth = getAuth(firebaseApp);
+  await setPersistence(auth, browserLocalPersistence);
   db = getFirestore(firebaseApp);
   enableIndexedDbPersistence(db).catch(() => {});
   onAuthStateChanged(auth, async user => {
