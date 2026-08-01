@@ -388,8 +388,8 @@ function subscribeToProjects() {
   unsubscribe?.();
   unsubscribe = onSnapshot(collection(db, "projects"), snapshot => {
     const cloud = snapshot.docs
-      .filter(document => isMeasurementProject({id:document.id, ...document.data()}))
-      .map(document => migrateProject({id:document.id, ...document.data()}));
+      .filter(document => isMeasurementProject({...document.data(), id:document.id}))
+      .map(document => migrateProject({...document.data(), id:document.id}));
     const local = readLocal();
     const merged = new Map(local.map(project => [project.id, project]));
     cloud.forEach(project => merged.set(project.id, project));

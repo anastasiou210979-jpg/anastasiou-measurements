@@ -1,5 +1,5 @@
-const CACHE = "anastasiou-v5-3-pending-2-20260731";
-const ASSETS = ["./", "./index.html", "./app.js?v=20260731-pending-2", "./pdf-report.js?v=20260731-pending-2", "./firebase-config.js", "./manifest.webmanifest", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
+const CACHE = "anastasiou-v5-3-xondriki-fix2-20260801";
+const ASSETS = ["./", "./index.html", "./app.js?v=20260801-xondriki-fix2", "./pdf-report.js?v=20260731-pending-2", "./firebase-config.js", "./manifest.webmanifest", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
 self.addEventListener("install", event => event.waitUntil(
   caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())
 ));
