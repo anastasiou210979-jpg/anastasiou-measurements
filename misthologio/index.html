@@ -34,7 +34,8 @@
   </section>
   <div id="payrollApp" class="hidden">
   <section class="card no-print">
-    <h2>Εβδομάδα</h2>
+    <h2>Εβδομάδα πενθήμερης εργασίας</h2>
+    <p class="note">Η εβδομάδα ενημερώνεται αυτόματα από Δευτέρα έως Παρασκευή.</p>
     <div class="grid">
       <label>Έναρξη εβδομάδας<input id="weekStart" type="date"></label>
       <label>Λήξη εβδομάδας<input id="weekEnd" type="date" readonly></label>
@@ -76,7 +77,7 @@ state.workers=state.workers.slice(0,6);
 let activeKey='';
 
 function mondayOfToday(){const d=new Date(),day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d.toISOString().slice(0,10)}
-function endOfWeek(start){if(!start)return'';const d=new Date(start+'T12:00:00');d.setDate(d.getDate()+6);return d.toISOString().slice(0,10)}
+function endOfWeek(start){if(!start)return'';const d=new Date(start+'T12:00:00');d.setDate(d.getDate()+4);return d.toISOString().slice(0,10)}
 function emptyRows(){return state.workers.map(w=>({id:w.id,extra:0,deduction:0,advance:0,paid:0}))}
 function currentWeek(){return state.weeks[activeKey]||{start:activeKey,end:endOfWeek(activeKey),rows:emptyRows(),notes:''}}
 function saveState(){localStorage.setItem(KEY,JSON.stringify(state))}
@@ -122,8 +123,16 @@ function renderWeekSelect(){
 }
 function renderHistory(){
   const box=document.querySelector('#history'),keys=Object.keys(state.weeks).sort().reverse();
-  box.innerHTML=keys.length?keys.map(k=>{const w=state.weeks[k];let due=0,paid=0;w.rows.forEach(r=>{const emp=state.workers.find(x=>x.id===r.id)||{weekly:0};due+=Math.max(0,num(emp.weekly)+num(r.extra)-num(r.deduction)-num(r.advance));paid+=num(r.paid)});return `<div class="history-item"><div><strong>${k} – ${endOfWeek(k)}</strong><div>Πληρώθηκαν: ${euro(paid)} • Υπόλοιπο: ${euro(Math.max(0,due-paid))}</div></div><button class="light openWeek" data-week="${k}">Άνοιγμα</button></div>`}).join(''):'<p>Δεν υπάρχουν ακόμη αποθηκευμένες εβδομάδες.</p>';
+  box.innerHTML=keys.length?keys.map(k=>{const w=state.weeks[k];let due=0,paid=0;w.rows.forEach(r=>{const emp=state.workers.find(x=>x.id===r.id)||{weekly:0};due+=Math.max(0,num(emp.weekly)+num(r.extra)-num(r.deduction)-num(r.advance));paid+=num(r.paid)});return `<div class="history-item"><div><strong>${k} – ${endOfWeek(k)}</strong><div>Πληρώθηκαν: ${euro(paid)} • Υπόλοιπο: ${euro(Math.max(0,due-paid))}</div></div><div class="tools"><button class="light openWeek" data-week="${k}">Άνοιγμα</button><button class="danger deleteWeek" data-week="${k}">Διαγραφή</button></div></div>`}).join(''):'<p>Δεν υπάρχουν ακόμη αποθηκευμένες εβδομάδες.</p>';
   document.querySelectorAll('.openWeek').forEach(b=>b.onclick=()=>{activeKey=b.dataset.week;render();scrollTo({top:0,behavior:'smooth'})});
+  document.querySelectorAll('.deleteWeek').forEach(b=>b.onclick=()=>deleteWeek(b.dataset.week));
+}
+async function deleteWeek(key){
+  if(!confirm(`Να διαγραφεί οριστικά η εβδομάδα ${key} έως ${endOfWeek(key)};`))return;
+  delete state.weeks[key];saveState();
+  if(window.payrollCloudDelete)await window.payrollCloudDelete(key);
+  if(activeKey===key)activeKey=mondayOfToday();
+  render();
 }
 document.querySelector('#saveBtn').onclick=async()=>{state.weeks[activeKey]=readForm();saveState();if(window.payrollCloudSave)await window.payrollCloudSave(activeKey,state.weeks[activeKey]);render();alert('Η εβδομάδα αποθηκεύτηκε.')};
 document.querySelector('#newWeekBtn').onclick=()=>{activeKey=mondayOfToday();if(state.weeks[activeKey]&&!confirm('Υπάρχει ήδη καταχώριση για αυτή την εβδομάδα. Να την ανοίξω;'))return;render()};
@@ -133,7 +142,7 @@ document.querySelector('#printBtn').onclick=()=>print();
 document.querySelector('#exportBtn').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'}));a.download=`ANASTASIOU_Mισθοί_backup_${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(a.href)};
 document.querySelector('#importBtn').onclick=()=>document.querySelector('#importFile').click();
 document.querySelector('#importFile').onchange=async e=>{try{const data=JSON.parse(await e.target.files[0].text());if(!data.workers||!data.weeks)throw 0;state=data;saveState();activeKey=mondayOfToday();render();alert('Το backup επαναφέρθηκε.')}catch{alert('Το αρχείο backup δεν είναι σωστό.')}e.target.value=''};
-window.receivePayrollCloud=cloud=>{state.weeks={...state.weeks,...cloud};saveState();render()};
+window.receivePayrollCloud=cloud=>{Object.entries(cloud).forEach(([key,value])=>{if(value===null)delete state.weeks[key];else state.weeks[key]=value});saveState();render()};
 window.showPayrollApp=()=>{document.querySelector('#loginCard').classList.add('hidden');document.querySelector('#payrollApp').classList.remove('hidden');activeKey=mondayOfToday();render()};
 </script>
 <script type="module">
@@ -145,7 +154,7 @@ try{
   const firebaseApp=initializeApp(firebaseConfig),auth=getAuth(firebaseApp),db=getFirestore(firebaseApp);await setPersistence(auth,browserLocalPersistence);
   document.querySelector('#loginBtn').onclick=async()=>{try{document.querySelector('#loginMessage').textContent='Σύνδεση…';await signInWithEmailAndPassword(auth,document.querySelector('#loginEmail').value.trim(),document.querySelector('#loginPassword').value);document.querySelector('#loginMessage').textContent=''}catch{document.querySelector('#loginMessage').textContent='Λάθος email ή κωδικός.'}};
   document.querySelector('#offlineBtn').onclick=()=>window.showPayrollApp();
-  onAuthStateChanged(auth,user=>{if(!user)return;window.showPayrollApp();onSnapshot(collection(db,'projects'),snapshot=>{const cloud={};snapshot.docs.filter(item=>item.id.startsWith('_misthologio_')).forEach(item=>{const data=item.data();if(data.start)cloud[data.start]=data});window.receivePayrollCloud(cloud)});window.payrollCloudSave=(key,week)=>setDoc(doc(db,'projects',`_misthologio_${key}`),{...week,type:'misthologio',serverUpdatedAt:serverTimestamp()},{merge:true})});
+  onAuthStateChanged(auth,user=>{if(!user)return;window.showPayrollApp();onSnapshot(collection(db,'projects'),snapshot=>{const cloud={};snapshot.docs.filter(item=>item.id.startsWith('_misthologio_')).forEach(item=>{const data=item.data();if(data.start)cloud[data.start]=data.deleted?null:data});window.receivePayrollCloud(cloud)});window.payrollCloudSave=(key,week)=>setDoc(doc(db,'projects',`_misthologio_${key}`),{...week,deleted:false,type:'misthologio',serverUpdatedAt:serverTimestamp()},{merge:true});window.payrollCloudDelete=key=>setDoc(doc(db,'projects',`_misthologio_${key}`),{start:key,deleted:true,type:'misthologio',serverUpdatedAt:serverTimestamp()},{merge:true})});
 }catch{document.querySelector('#loginMessage').textContent='Δεν φορτώθηκε η σύνδεση. Μπορείς να χρησιμοποιήσεις την τοπική λειτουργία.';document.querySelector('#offlineBtn').onclick=()=>window.showPayrollApp()}
 </script>
 </body>
