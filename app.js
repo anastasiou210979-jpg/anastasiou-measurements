@@ -55,12 +55,27 @@ function migrateProject(raw) {
   project.pending = Array.isArray(project.pending) ? project.pending : [];
   return project;
 }
+function isMeasurementProject(project) {
+  if (!project || typeof project !== "object") return false;
+  const id = String(project.id || "");
+  if (id.startsWith("_")) return false;
+  const recordType = String(project.typeRecord || project.type || "").toLowerCase();
+  if (["xondriki", "wholesale", "expense", "retail", "eispraksi", "misthologio", "schedule"].includes(recordType)) return false;
+  return Boolean(String(project.projectNo || project.number || project.projectNumber || "").trim());
+}
 function readLocal() {
   try {
-    const current = extractLegacyProjects(JSON.parse(localStorage.getItem(KEY) || "[]")).map(migrateProject);
-    if (current.length) return current;
+    const current = extractLegacyProjects(JSON.parse(localStorage.getItem(KEY) || "[]"))
+      .filter(isMeasurementProject)
+      .map(migrateProject);
+    if (current.length) {
+      localStorage.setItem(KEY, JSON.stringify(current));
+      return current;
+    }
     for (const key of LEGACY_KEYS) {
-      const old = extractLegacyProjects(JSON.parse(localStorage.getItem(key) || "[]")).map(migrateProject);
+      const old = extractLegacyProjects(JSON.parse(localStorage.getItem(key) || "[]"))
+        .filter(isMeasurementProject)
+        .map(migrateProject);
       if (old.length) {
         localStorage.setItem(KEY, JSON.stringify(old));
         return old;
@@ -373,7 +388,7 @@ function subscribeToProjects() {
   unsubscribe?.();
   unsubscribe = onSnapshot(collection(db, "projects"), snapshot => {
     const cloud = snapshot.docs
-      .filter(document => !document.id.startsWith("_counter"))
+      .filter(document => isMeasurementProject({id:document.id, ...document.data()}))
       .map(document => migrateProject({id:document.id, ...document.data()}));
     const local = readLocal();
     const merged = new Map(local.map(project => [project.id, project]));
